@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<!-- GAME DIRECTIONS -->
+<div id="directions-overlay" style="
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6); display: flex;
+  justify-content: center; align-items: center; z-index: 1000;">
+
+  <div style="
+    background: #fff8f0; border-radius: 16px; padding: 30px;
+    max-width: 480px; width: 90%; max-height: 85vh;
+    overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif; color: #1a1a1a;">
+
+    <h2 style="text-align:center; color:#c45e1a;">🐾 LifePaws – Quick Directions</h2>
+
+    <!-- EDUCATIONAL MESSAGE -->
+    <div style="
+      background: #fff3e0; border-left: 5px solid #c45e1a;
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+      font-size: 14px; color: #4a2800; line-height: 1.7;">
+      <strong>🐕 Why LifePaws?</strong><br>
+      Many people can't have a real pet due to cost, allergies, housing rules, or lack of time.
+      This game lets you experience the <strong>real responsibility</strong> of pet ownership —
+      including daily care, budgeting, and time management — in a safe, fun environment.
+      <br><br>
+      <em>Think you're ready to be a great pet owner? Let's find out! 🐾</em>
+    </div>
+
+    <p><strong>🎯 Goal:</strong> Keep your pet happy, healthy, and fed while managing your money.</p>
+
+    <h3 style="color:#c45e1a;">🎮 How to Play:</h3>
+    <ol style="color:#1a1a1a; line-height:1.8;">
+      <li><strong>Customize Your Pet</strong> – Choose your pet type and give it a name.</li>
+      <li><strong>Manage Stats</strong> – Watch ❤️ Happiness, 🍗 Hunger, and 🏥 Health. If any stat reaches 0, you lose.</li>
+      <li><strong>Take Actions:</strong>
+        <ul style="color:#1a1a1a;">
+          <li>🍽 Feed (costs money)</li>
+          <li>🎾 Play</li>
+          <li>💊 Heal (costs money)</li>
+        </ul>
+      </li>
+      <li><strong>Earn Money</strong> – Do chores to earn coins. Budget wisely in the shop.</li>
+      <li><strong>Play Mini-Games</strong> – Complete challenges to earn bonus coins and happiness.</li>
+      <li><strong>Level Up</strong> – Gain experience, unlock new items, badges, and features.</li>
+      <li><strong>Build Life Skills</strong> – Practice time management, budgeting, responsibility, and planning ahead.</li>
+    </ol>
+
+    <p style="text-align:center; color:#b22222;"><strong>⚠️ You lose if any stat reaches 0!</strong></p>
+
+    <!-- Q&A SECTION -->
+    <hr style="border: 1px solid #e0c9b0; margin: 20px 0;">
+    <h3 style="color:#c45e1a; text-align:center;">❓ Have a Question?</h3>
+    <p style="font-size:14px; color:#444;">Ask anything about how to play and get an instant answer!</p>
+
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <input id="qa-input" type="text" placeholder="e.g. How do I earn money?"
+        onkeydown="if(event.key==='Enter') answerQuestion()"
+        style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc;
+        font-size:14px; outline:none; color:#1a1a1a;" />
+      <button onclick="answerQuestion()" style="
+        background:#c45e1a; color:white; border:none;
+        padding:10px 16px; border-radius:10px; font-size:14px;
+        cursor:pointer; font-weight:bold;">Ask</button>
+    </div>
+
+    <div id="qa-answer" style="
+      background:#fdebd0; border-left:4px solid #c45e1a;
+      border-radius:8px; padding:12px; font-size:14px;
+      color:#1a1a1a; display:none; min-height:40px;">
+    </div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="document.getElementById('directions-overlay').style.display='none'" style="
+        background:#c45e1a; color:white; border:none;
+        padding:12px 30px; border-radius:25px; font-size:16px;
+        cursor:pointer; font-weight:bold;">
+        🐾 Let's Play!
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function answerQuestion() {
+    const input = document.getElementById('qa-input').value.toLowerCase().trim();
+    const answerBox = document.getElementById('qa-answer');
+    answerBox.style.display = 'block';
+
+    const qa = [
+      { keywords: ['money','earn','coins','chore'], answer: '💰 You earn money by doing chores! Use your coins to feed and heal your pet, or spend them wisely in the shop.' },
+      { keywords: ['feed','food','hungry','hunger'], answer: '🍽 Click the Feed button to feed your pet. It costs money, so make sure you have enough coins!' },
+      { keywords: ['heal','health','sick','medicine'], answer: '💊 Click the Heal button to restore your pet\'s health. This costs money, so keep an eye on your coins.' },
+      { keywords: ['play','happy','happiness'], answer: '🎾 Click the Play button to boost your pet\'s happiness — and it\'s free! Play often to keep your pet in a good mood.' },
+      { keywords: ['lose','death','die','zero','0'], answer: '⚠️ You lose if Happiness, Hunger, or Health reaches 0. Keep all three stats above zero to stay in the game!' },
+      { keywords: ['badge','unlock','reward'], answer: '🏅 Badges are unlocked by taking great care of your pet over time. Keep your stats high and level up to earn them!' },
+      { keywords: ['level','xp','experience'], answer: '⭐ You gain experience by caring for your pet. Level up to unlock new items, badges, and features!' },
+      { keywords: ['shop','buy','item'], answer: '🛒 Visit the shop to buy items that boost your pet\'s stats. Budget wisely — some items cost more than others!' },
+      { keywords: ['mini','game','challenge','bonus'], answer: '🎮 Mini-games are quick challenges you can complete to earn bonus coins and happiness. Look for them in the game!' },
+      { keywords: ['name','customize','choose','pet type'], answer: '🐾 At the start, you can choose your pet type and give it a unique name. Make it your own!' },
+      { keywords: ['stat','stats'], answer: '📊 Your three main stats are ❤️ Happiness, 🍗 Hunger, and 🏥 Health. Keep all of them above 0 to survive!' },
+      { keywords: ['skill','life','responsibility','budget'], answer: '🌱 LifePaws helps you build real life skills like budgeting, time management, responsibility, and planning ahead!' },
+      { keywords: ['why','purpose','point','allerg','housing','cost','real pet'], answer: '🐕 LifePaws exists because many people can\'t have a real pet due to cost, allergies, or housing rules. This game helps you experience and understand the real responsibility of pet ownership!' },
+    ];
+
+    const match = qa.find(item => item.keywords.some(k => input.includes(k)));
+
+    if (input === '') {
+      answerBox.innerHTML = '💬 Please type a question first!';
+    } else if (match) {
+      answerBox.innerHTML = match.answer;
+    } else {
+      answerBox.innerHTML = '🤔 Hmm, I\'m not sure about that one! Try asking about stats, money, feeding, healing, badges, or the shop.';
+    }
+
+    document.getElementById('qa-input').value = '';
+  }
+</script>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🐾 LifePaws</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#05050f;--card:#0d0d20;--card2:#13132a;--border:rgba(255,255,255,0.07);
+  --text:#e8e8ff;--muted:#6060a0;--r:20px;
+  --tp:#ff2d78;--tg:rgba(255,45,120,0.5);--tl:rgba(255,45,120,0.13);
+}
+/* PAGE STYLING, BACKGROUND EFFECTS, STAR ANIMATIONS */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.9}}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 10% 5%,rgba(255,45,120,.08),transparent),radial-gradient(ellipse 60% 40% at 90% 95%,rgba(0,200,255,.07),transparent);pointer-events:none;z-index:0;animation:aura 12s ease-in-out infinite alternate;}
+@keyframes aura{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(40deg)}}
+
+/* GAME SETUP AND CHARACTER CREATION */
+#setup{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;position:relative;z-index:1;}
+.setup-wrap{width:100%;max-width:560px;}
+.setup-hero{text-align:center;margin-bottom:28px;}
+.game-logo{font-size:3rem;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6bcb,#ff2d78,#ff6d00,#ffd60a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,45,120,.5));animation:logoPulse 3s ease-in-out infinite;}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(255,45,120,.4))}50%{filter:drop-shadow(0 0 60px rgba(255,45,120,.8))}}
+.paw-float{font-size:1.8rem;letter-spacing:8px;display:block;margin:8px 0;animation:pawFloat 4s ease-in-out infinite;}
+@keyframes pawFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+.setup-sub{color:var(--muted);font-size:.88rem;margin-top:4px;}
+.setup-card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:28px 24px;box-shadow:0 40px 100px rgba(0,0,0,.7);}
+.fld{margin-bottom:14px;}
+.fld label{display:block;font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;}
+input[type=text],input[type=number]{width:100%;padding:12px 15px;border-radius:12px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.07);color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;transition:all .2s;}
+input:focus{outline:none;border-color:var(--tp);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px var(--tl);}
+.pet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.pet-opt{padding:12px 4px;border-radius:14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.07);transition:all .2s;user-select:none;}
+.pet-opt:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.15);}
+.pet-opt.sel{border-color:var(--tp);background:var(--tl);box-shadow:0 0 20px var(--tg);}
+.pe{font-size:2rem;display:block;}.pl{font-size:.68rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+.pet-opt.sel .pl{color:var(--text);}
+.color-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
+.cswatch{aspect-ratio:1;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;}
+.cswatch:hover{transform:scale(1.2);}
+.cswatch.sel{border-color:white;box-shadow:0 0 14px currentColor;transform:scale(1.2);}
+.cswatch::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900;color:white;opacity:0;transition:opacity .2s;}
+.cswatch.sel::after{opacity:1;}
+.acc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
+.acc-opt{padding:8px 4px;border-radius:10px;text-align:center;cursor:pointer;font-size:1.5rem;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.07);transition:all .2s;}
+.acc-opt:hover{transform:scale(1.1);}
+.acc-opt.sel{border-color:var(--tp);background:var(--tl);}
+.diff-row{display:flex;gap:7px;}
+.diff-btn{flex:1;padding:9px;border-radius:11px;border:2px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:var(--muted);font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;cursor:pointer;transition:all .2s;text-align:center;}
+.diff-btn.sel{border-color:var(--tp);color:var(--text);background:var(--tl);}
+.btn-start{width:100%;margin-top:20px;padding:17px;background:linear-gradient(135deg,var(--tp),#ff6d00);border:none;border-radius:15px;color:white;font-family:'Fredoka One',cursive;font-size:1.35rem;cursor:pointer;transition:all .25s;box-shadow:0 8px 40px var(--tg);}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 16px 50px var(--tg);}
+
+/* GAME SCREEN LAYOUT AND TOPBAR */
+#game{display:none;min-height:100vh;position:relative;z-index:1;}
+.topbar{display:flex;align-items:center;gap:8px;background:rgba(10,10,25,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 14px;position:sticky;top:0;z-index:100;}
+.tb-pet{font-size:1.5rem;cursor:pointer;transition:transform .2s;line-height:1;}
+.tb-pet:hover{transform:scale(1.15) rotate(-5deg);}
+.tb-name{font-family:'Fredoka One',cursive;font-size:.95rem;}
+.tb-owner{font-size:.68rem;color:var(--muted);font-weight:700;}
+.tb-spacer{flex:1;}
+.tb-chip{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:18px;font-weight:900;font-size:.82rem;}
+.chip-money{background:rgba(57,255,100,.12);border:1px solid rgba(57,255,100,.25);color:#4dff6e;}
+.chip-turn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:.72rem;}
+.chip-sick{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);color:#ff5252;animation:blinkC 1s infinite;}
+@keyframes blinkC{0%,100%{opacity:1}50%{opacity:.3}}
+.settings-ico{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.settings-ico:hover{background:var(--tl);border-color:var(--tp);}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;background:rgba(10,10,25,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:99;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:60px;padding:9px 4px;border:none;background:none;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:900;font-size:.7rem;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;text-transform:uppercase;}
+.tab .ti{font-size:1.2rem;}
+.tab:hover{color:var(--text);}
+.tab.on{color:var(--tp);border-bottom-color:var(--tp);}
+.pane{display:none;padding:13px;max-width:900px;margin:0 auto;animation:fadeUp .22s ease;}
+.pane.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME AND PET CARD LAYOUT  */
+.home-layout{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+@media(max-width:600px){.home-layout{grid-template-columns:1fr;}}
+.pet-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;}
+.pet-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--tg),transparent 70%);pointer-events:none;opacity:.5;}
+.pet-world{position:relative;width:155px;height:155px;cursor:pointer;user-select:none;margin:6px 0;}
+.pet-bg-circle{position:absolute;inset:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.04),transparent);border:1px solid rgba(255,255,255,.05);animation:rotateSlow 20s linear infinite;}
+@keyframes rotateSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.pet-emoji{font-size:6.5rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);transition:transform .3s;line-height:1;filter:drop-shadow(0 6px 20px var(--tg));z-index:2;}
+.pet-world:hover .pet-emoji{transform:translate(-50%,-60%) scale(1.08) rotate(-5deg);}
+.pet-acc-disp{position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:2rem;z-index:3;pointer-events:none;}
+.particle{position:absolute;pointer-events:none;font-size:1.1rem;z-index:10;animation:pUp 1s ease-out forwards;}
+@keyframes pUp{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.4)}}
+.pet-name-big{font-family:'Fredoka One',cursive;font-size:1.7rem;margin-top:3px;}
+.stage-pill{padding:3px 13px;border-radius:18px;font-size:.7rem;font-weight:900;background:var(--tl);border:1px solid var(--tp);color:var(--tp);margin-top:4px;text-transform:uppercase;letter-spacing:.4px;}
+.mood-big{margin-top:7px;font-size:.95rem;font-weight:800;}
+.xp-wrap{width:100%;margin-top:12px;}
+.xp-meta{display:flex;justify-content:space-between;font-size:.71rem;font-weight:900;color:var(--muted);margin-bottom:4px;}
+.track{height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.25,.8,.25,1);}
+.xp-fill{background:linear-gradient(90deg,var(--tp),#ff9a3c);}
+.streak-badge{margin-top:8px;font-size:.75rem;font-weight:900;color:#ffd60a;min-height:18px;}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px;width:100%;}
+.action{padding:10px 5px;border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.04);color:var(--text);font-family:'Nunito',sans-serif;font-weight:900;font-size:.75rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
+.action .ai{font-size:1.3rem;}
+.action:hover{background:var(--tl);border-color:var(--tp);transform:translateY(-2px);}
+.action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+/* PET STATS AND INFO CARDS */
+.stats-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:18px;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:1.1rem;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.vstat{margin-bottom:11px;}
+.vstat-hdr{display:flex;justify-content:space-between;font-size:.77rem;font-weight:800;margin-bottom:4px;}
+.vstat-nm{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.75);}
+.vstat-v{font-weight:900;}
+.vstat-v.crit{color:#ff4444;animation:critB .8s infinite;}
+@keyframes critB{0%,100%{opacity:1}50%{opacity:.15}}
+.vstat-v.warn{color:#ffb300;}
+.s-hunger{background:linear-gradient(90deg,#ff7043,#ffb300);}
+.s-happy{background:linear-gradient(90deg,#ffd60a,#ffe575);}
+.s-health{background:linear-gradient(90deg,#00c853,#69ff47);}
+.s-energy{background:linear-gradient(90deg,#00b0ff,#80d8ff);}
+.s-hygiene{background:linear-gradient(90deg,#e040fb,#ea80fc);}
+.s-social{background:linear-gradient(90deg,#ff6bcb,#ff9a8b);}
+.pulse-bar{animation:pulseBar .9s infinite;}
+@keyframes pulseBar{0%,100%{opacity:1}50%{opacity:.2}}
+.info-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;}
+.ipill{padding:4px 10px;border-radius:18px;font-size:.71rem;font-weight:800;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+.ipill.married{border-color:rgba(255,107,203,.4);color:#ff6bcb;background:rgba(255,107,203,.08);}
+.ipill.children{border-color:rgba(255,214,10,.3);color:#ffd60a;background:rgba(255,214,10,.07);}
+.ipill.sick{border-color:rgba(255,80,80,.4);color:#ff5252;background:rgba(255,80,80,.1);animation:critB 1s infinite;}
+.ipill.streak{border-color:rgba(255,165,0,.4);color:#ffb300;background:rgba(255,165,0,.08);}
+
+/* MINI-CHALLENGE MODAL */
+.challenge-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);z-index:600;align-items:center;justify-content:center;padding:14px;}
+.challenge-overlay.open{display:flex;}
+.challenge-box{background:var(--card2);border-radius:26px;padding:28px 24px;width:100%;max-width:380px;border:1px solid rgba(255,255,255,.1);box-shadow:0 40px 100px rgba(0,0,0,.8);animation:modalBounce .35s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;}
+@keyframes modalBounce{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ch-title{font-family:'Fredoka One',cursive;font-size:1.5rem;margin-bottom:4px;}
+.ch-sub{color:var(--muted);font-size:.82rem;margin-bottom:18px;}
+.ch-icon{font-size:3.5rem;display:block;margin-bottom:12px;animation:iconBob 1s ease-in-out infinite;}
+@keyframes iconBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* RHYTHM GAME */
+.rhythm-track{height:60px;background:rgba(255,255,255,.04);border-radius:14px;position:relative;overflow:hidden;margin:14px 0;border:2px solid rgba(255,255,255,.08);}
+.rhythm-zone{position:absolute;left:50%;transform:translateX(-50%);top:6px;bottom:6px;width:50px;border-radius:8px;background:rgba(0,230,100,.25);border:2px solid rgba(0,230,100,.6);box-shadow:0 0 20px rgba(0,230,100,.3);}
+.rhythm-dot{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:var(--tp);box-shadow:0 0 20px var(--tg);transition:left .02s linear;}
+.rhythm-hit-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--tp),#ff6d00);border:none;border-radius:14px;color:white;font-family:'Fredoka One',cursive;font-size:1.4rem;cursor:pointer;transition:all .15s;box-shadow:0 6px 24px var(--tg);}
+.rhythm-hit-btn:active{transform:scale(.95);}
+.rhythm-feedback{font-family:'Fredoka One',cursive;font-size:1.3rem;min-height:36px;margin-top:10px;transition:all .3s;}
+.rhythm-attempts{display:flex;justify-content:center;gap:8px;margin-bottom:12px;}
+.ratt{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.ratt.hit{border-color:rgba(0,230,100,.6);background:rgba(0,230,100,.15);}
+.ratt.miss{border-color:rgba(255,60,60,.5);background:rgba(255,60,60,.1);}
+
+/* MASH GAME */
+.mash-progress{height:28px;background:rgba(255,255,255,.05);border-radius:14px;overflow:hidden;margin:14px 0;border:1px solid rgba(255,255,255,.1);position:relative;}
+.mash-fill{height:100%;border-radius:14px;background:linear-gradient(90deg,var(--tp),#ff6d00);transition:width .1s;position:relative;}
+.mash-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2));border-radius:14px;}
+.mash-btn{width:100%;padding:22px;background:linear-gradient(135deg,#0066ff,#00b4ff);border:none;border-radius:14px;color:white;font-family:'Fredoka One',cursive;font-size:1.5rem;cursor:pointer;transition:all .1s;box-shadow:0 6px 24px rgba(0,100,255,.4);user-select:none;-webkit-user-select:none;}
+.mash-btn:active{transform:scale(.94);box-shadow:0 2px 10px rgba(0,100,255,.3);}
+.mash-count{font-family:'Press Start 2P',monospace;font-size:1.2rem;color:var(--tp);margin:8px 0;}
+.mash-timer{font-size:.8rem;font-weight:900;color:var(--muted);margin-bottom:10px;}
+.mash-timer span{color:var(--tp);font-size:1rem;}
+
+/* RESULTS */
+.result-box{padding:14px;border-radius:14px;margin:12px 0;font-weight:800;}
+.result-great{background:rgba(0,200,100,.1);border:1px solid rgba(0,200,100,.3);color:#4dff6e;}
+.result-ok{background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.3);color:#ffb300;}
+.result-bad{background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.3);color:#ff5252;}
+.ch-close-btn{width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--text);font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;transition:all .2s;margin-top:8px;}
+.ch-close-btn:hover{background:var(--tl);border-color:var(--tp);}
+
+/* LIFE AND EVENTS LIST */
+.life-filters{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.lf-btn{padding:5px 11px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);font-size:.73rem;font-weight:900;cursor:pointer;transition:all .15s;}
+.lf-btn.on{background:var(--tl);border-color:var(--tp);color:var(--tp);}
+.elist{display:flex;flex-direction:column;gap:7px;max-height:65vh;overflow-y:auto;padding-right:4px;}
+.elist::-webkit-scrollbar{width:3px;}
+.elist::-webkit-scrollbar-thumb{background:var(--tl);border-radius:2px;}
+.eitem{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:11px 13px;display:flex;gap:11px;align-items:flex-start;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.eitem.good{border-color:rgba(0,200,100,.2);background:rgba(0,200,100,.04);}
+.eitem.bad{border-color:rgba(255,60,60,.2);background:rgba(255,60,60,.04);}
+.eitem.special{border-color:rgba(255,180,0,.3);background:rgba(255,180,0,.05);}
+.eitem.death{border-color:rgba(150,0,200,.4);background:rgba(150,0,200,.07);}
+.eicon{font-size:1.9rem;flex-shrink:0;line-height:1.1;}
+.ebody .et{font-weight:800;font-size:.9rem;}.ebody .ed{font-size:.78rem;color:var(--muted);margin-top:3px;line-height:1.5;}
+.ebody .en{font-size:.67rem;color:var(--muted);margin-top:3px;font-weight:700;}
+
+/* MINI-GAMES GRID */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:13px;}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:26px 18px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.gcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+.gcard:hover{transform:translateY(-5px);border-color:var(--tp);}
+.gcard:hover::before{opacity:1;}
+.gc1::before{background:radial-gradient(ellipse at 50% 110%,rgba(0,200,255,.15),transparent);}
+.gc2::before{background:radial-gradient(ellipse at 50% 110%,rgba(180,0,255,.15),transparent);}
+.gc3::before{background:radial-gradient(ellipse at 50% 110%,rgba(255,160,0,.15),transparent);}
+.gc4::before{background:radial-gradient(ellipse at 50% 110%,rgba(0,255,100,.12),transparent);}
+.gicon{font-size:3.5rem;display:block;margin-bottom:9px;transition:transform .3s;filter:drop-shadow(0 4px 10px rgba(255,255,255,.1));}
+.gcard:hover .gicon{transform:scale(1.15) rotate(-5deg);}
+.gtitle{font-family:'Fredoka One',cursive;font-size:1.2rem;}.gdesc{font-size:.74rem;color:var(--muted);line-height:1.5;margin-top:4px;}
+.greward{display:inline-block;margin-top:9px;padding:4px 12px;border-radius:18px;font-size:.71rem;font-weight:900;background:rgba(77,255,110,.1);color:#4dff6e;border:1px solid rgba(77,255,110,.2);}
+.ghigh{display:block;font-size:.66rem;color:var(--muted);margin-top:4px;font-weight:700;}
+
+/* SKILLS AND TRICKS */
+.skills-layout{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+@media(max-width:600px){.skills-layout{grid-template-columns:1fr;}}
+.scat-card{background:var(--card);border:1px solid var(--border);border-radius:19px;padding:16px;}
+.scat-title{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px;}
+.skill-item{margin-bottom:10px;}
+.skill-hdr{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.skill-name{font-size:.8rem;font-weight:800;flex:1;}
+.skill-lvl{font-size:.68rem;font-weight:900;padding:2px 7px;border-radius:9px;background:rgba(255,255,255,.07);}
+.skill-bar-row{display:flex;align-items:center;gap:7px;}
+.strack{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.sfill{height:100%;border-radius:3px;transition:width .5s;}
+.prac-btn{padding:3px 9px;border-radius:7px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.68rem;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.prac-btn:hover{background:var(--tl);border-color:var(--tp);}
+.prac-btn:disabled{opacity:.3;cursor:not-allowed;}
+.tricks-card{background:var(--card);border:1px solid var(--border);border-radius:19px;padding:16px;margin-top:13px;}
+.trick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;margin-top:9px;}
+.titem{padding:9px 11px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.titem.learned{border-color:rgba(0,200,100,.3);background:rgba(0,200,100,.06);color:#69ff47;}
+.titem.available{cursor:pointer;}.titem.available:hover{border-color:var(--tp);background:var(--tl);}
+.titem.locked{opacity:.25;}
+
+/* MONEY AND WALLET */
+.money-layout{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+@media(max-width:600px){.money-layout{grid-template-columns:1fr;}}
+.money-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:18px;}
+.wallet-hero{text-align:center;padding:14px 0 8px;}
+.wallet-amt{font-family:'Fredoka One',cursive;font-size:3.2rem;background:linear-gradient(135deg,#4dff6e,#00c853);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(77,255,110,.4));}
+.wallet-label{color:var(--muted);font-size:.76rem;font-weight:800;margin-top:2px;}
+.goal-wrap{margin-top:12px;}
+.goal-row{display:flex;justify-content:space-between;font-size:.73rem;font-weight:800;color:var(--muted);margin-bottom:4px;}
+.goal-track{height:9px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;}
+.goal-fill{height:100%;background:linear-gradient(90deg,#00c853,#69ff47);border-radius:5px;transition:width .6s;}
+.big-action{width:100%;padding:13px;border-radius:13px;border:none;color:white;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:all .2s;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.big-action:hover{transform:translateY(-2px);}
+.ba-shop{background:linear-gradient(135deg,#ff2d78,#ff6d00);}
+.ba-chore{background:linear-gradient(135deg,#00b09b,#96c93d);}
+.ba-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);}
+.exp-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.82rem;}
+.exp-cat{color:var(--muted);font-weight:700;}.exp-amt{font-weight:900;color:#ffb300;}
+
+/* MODALS AND OVERLAYS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);z-index:500;align-items:center;justify-content:center;padding:13px;}
+.overlay.open{display:flex;}
+.modal{background:var(--card2);border-radius:24px;padding:26px 22px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border:1px solid rgba(255,255,255,.1);box-shadow:0 40px 100px rgba(0,0,0,.8);animation:modalBounce .33s cubic-bezier(.34,1.56,.64,1);position:relative;}
+.modal.wide{max-width:550px;}
+.modal-x{position:absolute;top:13px;right:13px;background:rgba(255,255,255,.07);border:none;color:var(--text);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.85rem;font-weight:900;transition:all .15s;}
+.modal-x:hover{background:var(--tp);}
+.modal h2{font-family:'Fredoka One',cursive;font-size:1.45rem;margin-bottom:3px;}
+.modal-sub{color:var(--muted);font-size:.8rem;margin-bottom:14px;}
+
+/* SHOP AND CHORE ITEMS */
+.shop-cat-hdr{font-size:.67rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:12px 0 6px;}
+.shop-item{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:11px;margin-bottom:5px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:all .15s;}
+.shop-item:hover{background:rgba(255,255,255,.07);border-color:var(--tp);}
+.si-name{font-weight:800;font-size:.88rem;}.si-fx{font-size:.7rem;color:var(--muted);margin-top:2px;}
+.si-price{padding:4px 11px;border-radius:14px;font-weight:900;font-size:.8rem;background:rgba(77,255,110,.1);color:#4dff6e;border:1px solid rgba(77,255,110,.2);margin-left:9px;white-space:nowrap;}
+.si-price.cant{background:rgba(255,60,60,.1);color:#ff5252;border-color:rgba(255,60,60,.2);}
+.chore-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:11px;margin-bottom:5px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:all .15s;}
+.chore-item:hover{background:rgba(0,200,100,.06);border-color:rgba(0,200,100,.3);}
+.ci-name{font-weight:700;font-size:.86rem;}.ci-earn{color:#4dff6e;font-weight:900;background:rgba(77,255,110,.1);padding:4px 9px;border-radius:13px;font-size:.8rem;}
+
+/* TIC-TAC-TOE BOARD */
+.ttt-board{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0;}
+.ttt-cell{aspect-ratio:1;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.09);border-radius:13px;font-size:2.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.ttt-cell:hover:not(.taken){background:var(--tl);border-color:var(--tp);}
+.ttt-cell.taken{cursor:default;}
+.ttt-cell.X{color:#ff2d78;text-shadow:0 0 20px rgba(255,45,120,.6);}
+.ttt-cell.O{color:#00b4ff;text-shadow:0 0 20px rgba(0,180,255,.6);}
+.ttt-status{text-align:center;font-family:'Fredoka One',cursive;font-size:1.1rem;min-height:28px;margin-bottom:5px;}
+.ttt-scores{display:flex;justify-content:center;gap:20px;font-size:.83rem;font-weight:800;margin-bottom:10px;}
+.ts-you{color:#ff2d78;}.ts-ai{color:#00b4ff;}.ts-tie{color:var(--muted);}
+
+/* MAGIC 8-BALL */
+.ball8{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#1a1a4a,#000015);border:3px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;box-shadow:0 20px 60px rgba(0,0,80,.7),inset 0 -20px 40px rgba(0,0,100,.5);user-select:none;margin:10px auto;}
+.ball8:hover{transform:scale(1.04);}
+.ball8.shake{animation:shake8 .55s ease;}
+@keyframes shake8{0%,100%{transform:rotate(0)}15%{transform:rotate(-14deg)}30%{transform:rotate(14deg)}45%{transform:rotate(-10deg)}60%{transform:rotate(10deg)}75%{transform:rotate(-5deg)}}
+.ball-inner{width:82px;height:82px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2a2a8a,#0a0a3a);display:flex;align-items:center;justify-content:center;border:2px solid rgba(150,150,255,.3);}
+.ball-8{font-family:'Fredoka One',cursive;font-size:2.1rem;color:rgba(160,160,255,.8);}
+.ball-ans{font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:center;margin:12px 0 5px;min-height:38px;color:var(--tp);}
+.ball-q{width:100%;padding:11px 13px;border-radius:11px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.08);color:var(--text);font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:600;margin-bottom:8px;transition:border .2s;}
+.ball-q:focus{outline:none;border-color:var(--tp);}
+
+/* HORSE GAME */
+.horse-court{background:rgba(180,80,0,.06);border:2px solid rgba(200,100,0,.15);border-radius:14px;padding:16px;text-align:center;margin-bottom:11px;}
+.hoop{font-size:2.8rem;line-height:1;}
+.horse-ball-disp{font-size:2rem;display:inline-block;margin:3px 0;transition:all .5s;}
+.horse-ball-disp.scored{animation:scoredAnim .4s ease;}
+.horse-ball-disp.missed{animation:missAnim .4s ease;}
+@keyframes scoredAnim{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+@keyframes missAnim{0%,100%{transform:translateX(0)}25%{transform:translateX(-22px)}75%{transform:translateX(22px)}}
+.horse-letters{font-family:'Press Start 2P',monospace;font-size:1rem;letter-spacing:7px;color:#ff6d00;}
+.hl.got{color:#ff2d78;}
+.horse-meta{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;font-weight:800;}
+.baskets-ct{color:#4dff6e;font-family:'Press Start 2P',monospace;font-size:.78rem;}
+
+/* POWER BARS */
+.power-wrap{margin:11px 0;}
+.power-lbl{display:flex;justify-content:space-between;font-size:.7rem;font-weight:800;color:var(--muted);margin-bottom:4px;}
+.power-track{height:20px;background:rgba(255,255,255,.05);border-radius:10px;overflow:hidden;position:relative;}
+.power-zones{position:absolute;inset:0;display:flex;}
+.zone-b{background:rgba(255,60,60,.3);flex:25%;}.zone-o{background:rgba(255,200,0,.2);flex:20%;}
+.zone-g{background:rgba(0,230,100,.4);flex:10%;}.zone-o2{background:rgba(255,200,0,.2);flex:20%;}
+.zone-b2{background:rgba(255,60,60,.3);flex:25%;}
+.power-ind{position:absolute;top:0;height:100%;width:9px;background:white;border-radius:5px;box-shadow:0 0 12px rgba(255,255,255,.7);transition:left .028s linear;}
+.shoot-btn{width:100%;padding:13px;background:linear-gradient(135deg,#ff8c00,#ff2d78);border:none;border-radius:11px;color:white;font-family:'Fredoka One',cursive;font-size:1.15rem;cursor:pointer;transition:all .2s;margin-top:7px;}
+.shoot-btn:hover{transform:translateY(-2px);}
+.shoot-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+/* SNAKE GAME */
+#snake-canvas{border:2px solid rgba(255,255,255,.08);border-radius:11px;display:block;max-width:100%;}
+.snake-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:800;}
+.snake-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;max-width:165px;margin:9px auto 0;}
+.sc-btn{padding:9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text);font-size:1.1rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;}
+.sc-btn:hover{background:var(--tl);border-color:var(--tp);}
+.prop-emoji{font-size:3.8rem;text-align:center;margin:12px 0;display:block;animation:heartbeat 1s ease-in-out infinite;}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* CHOICE BUTTONS AND CLICKABLE ELEMENTS */
+.choice-row{display:flex;gap:9px;margin-top:14px;}
+.cbtn{flex:1;padding:13px;border:none;border-radius:13px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:all .2s;}
+.cbtn-yes{background:linear-gradient(135deg,#ff6bcb,#ff2d78);color:white;}
+.cbtn-no{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);}
+.cbtn-yes:hover{transform:scale(1.03);}
+.cbtn-no:hover{background:rgba(255,255,255,.1);color:var(--text);}
+.badge-item{display:flex;gap:11px;align-items:center;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-bottom:6px;}
+.badge-item.earned{border-color:rgba(255,180,0,.25);background:rgba(255,180,0,.05);}
+.badge-item:not(.earned){filter:grayscale(1);opacity:.3;}
+.bi-icon{font-size:1.9rem;}.bi-name{font-weight:800;font-size:.88rem;}.bi-desc{font-size:.73rem;color:var(--muted);margin-top:2px;}
+.sg-row{margin-bottom:16px;}
+.sg-row label{display:block;font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:7px;}
+
+/* DEATH SCREEN AND GAME OVER */
+#death{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1;}
+#death.show{display:flex;}
+.death-wrap{background:var(--card);border:2px solid rgba(180,0,255,.3);border-radius:26px;padding:34px 26px;max-width:460px;width:100%;text-align:center;box-shadow:0 0 80px rgba(150,0,200,.2);animation:modalBounce .4s ease;}
+.death-wrap h2{font-family:'Fredoka One',cursive;font-size:2.1rem;background:linear-gradient(135deg,#c77dff,#9c27b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.death-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0;}
+.death-stat{background:rgba(255,255,255,.04);border-radius:11px;padding:11px;}
+.ds-val{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--tp);}
+.ds-lbl{font-size:.68rem;font-weight:800;color:var(--muted);margin-top:2px;}
+
+/* NOTIFICATIONS AND BADGES */
+#notif{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(13,13,30,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);padding:10px 20px;border-radius:28px;font-weight:700;font-size:.86rem;pointer-events:none;opacity:0;transition:opacity .3s;z-index:999;max-width:90vw;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.4);}
+#notif.show{opacity:1;}
+#badge-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd54f,#ff8f00);color:#1a0a00;padding:11px 20px;border-radius:28px;font-weight:900;font-size:.88rem;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;box-shadow:0 8px 28px rgba(255,165,0,.4);}
+#badge-toast.show{opacity:1;}
+.pill{padding:6px 14px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:all .15s;}
+.pill:hover{background:var(--tl);border-color:var(--tp);}
+.full{width:100%;}.mt10{margin-top:10px;}.mt14{margin-top:14px;}.center{text-align:center;}
+.bounce-it{animation:bounceit .45s ease;}
+@keyframes bounceit{0%,100%{transform:translate(-50%,-54%)}50%{transform:translate(-50%,-68%) scale(1.1) rotate(-8deg)}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div id="notif"></div>
+<div id="badge-toast"></div>
+
+<!-- MAIN GAME SCREEN: DISPLAYS PET INFO, MONEY, TURN COUNTER, STATUS, AND NAVIGATION TABS -->
+<div id="setup">
+  <div class="setup-wrap">
+    <div class="setup-hero">
+      <span class="paw-float">🐾 🐾 🐾</span>
+      <div class="game-logo">LifePaws</div>
+      <div class="setup-sub">Raise, love, play & grow — your pet's life is yours to shape</div>
+    </div>
+    <div class="setup-card">
+      <!-- NAMING PET AND PLAYER -->
+      <div class="fld"><label>Your Name</label><input type="text" id="i-owner" placeholder="Your name..." maxlength="20"/></div>
+      <div class="fld"><label>Pet's Name</label><input type="text" id="i-petname" placeholder="Name your pet..." maxlength="20"/></div>
+      <div class="fld">
+        <!-- PET SELECTION -->
+        <label>Choose Your Pet</label>
+        <div class="pet-grid" id="pet-grid">
+          <div class="pet-opt sel" data-t="dog"><span class="pe">🐶</span><span class="pl">Dog</span></div>
+          <div class="pet-opt" data-t="cat"><span class="pe">🐱</span><span class="pl">Cat</span></div>
+          <div class="pet-opt" data-t="bunny"><span class="pe">🐰</span><span class="pl">Bunny</span></div>
+          <div class="pet-opt" data-t="dino"><span class="pe">🦕</span><span class="pl">Dino</span></div>
+          <div class="pet-opt" data-t="fox"><span class="pe">🦊</span><span class="pl">Fox</span></div>
+          <div class="pet-opt" data-t="panda"><span class="pe">🐼</span><span class="pl">Panda</span></div>
+          <div class="pet-opt" data-t="dragon"><span class="pe">🐲</span><span class="pl">Dragon</span></div>
+          <div class="pet-opt" data-t="owl"><span class="pe">🦉</span><span class="pl">Owl</span></div>
+        </div>
+      </div>
+      <!-- THEME COLOR SELECTION -->
+      <div class="fld"><label>Color Theme</label>
+        <div class="color-grid" id="cg">
+          <div class="cswatch sel" data-c="pink" style="background:#ff2d78"></div>
+          <div class="cswatch" data-c="orange" style="background:#ff6d00"></div>
+          <div class="cswatch" data-c="yellow" style="background:#ffd60a"></div>
+          <div class="cswatch" data-c="green" style="background:#39ff14"></div>
+          <div class="cswatch" data-c="blue" style="background:#00b4ff"></div>
+          <div class="cswatch" data-c="purple" style="background:#c77dff"></div>
+          <div class="cswatch" data-c="cyan" style="background:#00f5d4"></div>
+          <div class="cswatch" data-c="red" style="background:#ff073a"></div>
+        </div>
+      </div>
+      <!-- PET ACCESSORY SELECTION -->
+      <div class="fld"><label>Accessory</label>
+        <div class="acc-grid" id="ag">
+          <div class="acc-opt sel" data-a="">🚫</div><div class="acc-opt" data-a="🎩">🎩</div>
+          <div class="acc-opt" data-a="👑">👑</div><div class="acc-opt" data-a="🎓">🎓</div>
+          <div class="acc-opt" data-a="🌸">🌸</div><div class="acc-opt" data-a="😎">😎</div>
+        </div>
+      </div>
+      <!-- GAME DIFFICULTY LEVEL -->
+      <div class="fld"><label>Difficulty</label>
+        <div class="diff-row" id="diff-row">
+          <div class="diff-btn" data-d="easy">🟢 Easy</div>
+          <div class="diff-btn sel" data-d="normal">🟡 Normal</div>
+          <div class="diff-btn" data-d="hard">🔴 Hard</div>
+        </div>
+      </div>
+      <!-- MONEY SELECTION -->
+      <div class="fld"><label>Starting Budget ($50–$500)</label><input type="number" id="i-budget" value="150" min="50" max="500"/></div>
+      <div class="fld"><label>Savings Goal (optional)</label><input type="number" id="i-goal" placeholder="e.g. 300 — leave blank to skip" min="0"/></div>
+      <button class="btn-start" onclick="startGame()">🐾 Start Adventure!</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME INTERFACE -->
+<div id="game">
+  <div class="topbar">
+    <div class="tb-pet" onclick="petPoke()" id="tb-pet">🐶</div>
+    <div><div class="tb-name" id="tb-name">Buddy</div><div class="tb-owner" id="tb-owner">Player's Pet</div></div>
+    <div class="tb-spacer"></div>
+    <div class="tb-chip chip-money" id="tb-money">$150</div>
+    <div class="tb-chip chip-turn" id="tb-turn">T0</div>
+    <div class="tb-chip chip-sick" id="tb-sick" style="display:none">🤒 Sick!</div>
+    <div class="settings-ico" onclick="openM('settings-modal')">⚙️</div>
+  </div>
+  <nav class="tabs">
+    <button class="tab on" data-p="home"><span class="ti">🏠</span>Home</button>
+    <button class="tab" data-p="life"><span class="ti">📖</span>Life</button>
+    <button class="tab" data-p="games"><span class="ti">🎮</span>Games</button>
+    <button class="tab" data-p="skills"><span class="ti">🎓</span>Skills</button>
+    <button class="tab" data-p="money"><span class="ti">💰</span>Money</button>
+  </nav>
+
+  <!-- HOME PANE -->
+  <div class="pane on" id="p-home">
+    <div class="home-layout">
+      <div class="pet-card">
+        <div class="pet-glow"></div>
+        <div class="pet-world" onclick="petPoke()">
+          <div class="pet-bg-circle"></div>
+          <span class="pet-emoji" id="pet-emoji">🐶</span>
+          <span class="pet-acc-disp" id="pet-acc-disp"></span>
+        </div>
+        <div class="pet-name-big" id="pet-name-d">Buddy</div>
+        <div class="stage-pill" id="stage-pill">Baby · Lv.1</div>
+        <div class="mood-big" id="mood-d">😊 Happy</div>
+        <div class="xp-wrap">
+          <div class="xp-meta"><span id="xp-lbl">XP 0/50</span><span id="lv-lbl">Lv.1</span></div>
+          <div class="track"><div class="fill xp-fill" id="xp-bar" style="width:0%"></div></div>
+        </div>
+        <div class="streak-badge" id="streak-badge"></div>
+        <div class="actions">
+          <button class="action" onclick="startChallenge('feed')"><span class="ai">🍖</span>Feed</button>
+          <button class="action" onclick="startChallenge('play')"><span class="ai">🎾</span>Play</button>
+          <button class="action" onclick="startChallenge('rest')"><span class="ai">😴</span>Rest</button>
+          <button class="action" onclick="startChallenge('bath')"><span class="ai">🛁</span>Bath</button>
+          <button class="action" onclick="startChallenge('vet')"><span class="ai">🏥</span>Vet ($50)</button>
+          <button class="action" onclick="startChallenge('groom')"><span class="ai">✂️</span>Groom</button>
+          <button class="action" onclick="startChallenge('meditate')"><span class="ai">🧘</span>Meditate</button>
+          <button class="action" onclick="startChallenge('explore')"><span class="ai">🗺️</span>Explore</button>
+          <button class="action" onclick="startChallenge('sing')"><span class="ai">🎵</span>Sing</button>
+        </div>
+      </div>
+      <div class="stats-card">
+        <div class="sec-title">📊 Vital Stats</div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">🍖 Hunger</span><span class="vstat-v" id="sv-h">70%</span></div><div class="track"><div class="fill s-hunger" id="sb-h" style="width:70%"></div></div></div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">😄 Happiness</span><span class="vstat-v" id="sv-hp">70%</span></div><div class="track"><div class="fill s-happy" id="sb-hp" style="width:70%"></div></div></div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">💊 Health</span><span class="vstat-v" id="sv-hl">80%</span></div><div class="track"><div class="fill s-health" id="sb-hl" style="width:80%"></div></div></div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">⚡ Energy</span><span class="vstat-v" id="sv-e">80%</span></div><div class="track"><div class="fill s-energy" id="sb-e" style="width:80%"></div></div></div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">🛁 Hygiene</span><span class="vstat-v" id="sv-hy">70%</span></div><div class="track"><div class="fill s-hygiene" id="sb-hy" style="width:70%"></div></div></div>
+        <div class="vstat"><div class="vstat-hdr"><span class="vstat-nm">🤝 Social</span><span class="vstat-v" id="sv-s">60%</span></div><div class="track"><div class="fill s-social" id="sb-s" style="width:60%"></div></div></div>
+        <div class="info-pills" id="info-pills"></div>
+        <div style="margin-top:11px;display:flex;gap:5px;flex-wrap:wrap;" id="badges-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE PANE -->
+  <div class="pane" id="p-life">
+    <div class="sec-title" style="margin-bottom:9px;">📖 Life Story</div>
+    <div class="life-filters" id="life-filters">
+      <button class="lf-btn on" data-f="all">All</button>
+      <button class="lf-btn" data-f="special">✨ Special</button>
+      <button class="lf-btn" data-f="good">💚 Good</button>
+      <button class="lf-btn" data-f="bad">❤️ Bad</button>
+    </div>
+    <div class="elist" id="elist"><div style="text-align:center;padding:36px;color:var(--muted);">Your story begins...</div></div>
+  </div>
+
+  <!-- GAMES PANE -->
+  <div class="pane" id="p-games">
+    <div class="sec-title" style="margin-bottom:11px;">🎮 Arcade</div>
+    <div class="games-grid">
+      <div class="gcard gc1" onclick="openTTT()"><span class="gicon">⭕</span><div class="gtitle">Tic Tac Toe</div><div class="gdesc">Beat the AI to win big!</div><div class="greward">Win=$20 · Draw=$5</div><span class="ghigh" id="ttt-hi">Best: 0 wins</span></div>
+      <div class="gcard gc2" onclick="openBall()"><span class="gicon">🎱</span><div class="gtitle">Magic 8-Ball</div><div class="gdesc">Ask the oracle anything.</div><div class="greward">+$3 per shake</div><span class="ghigh" id="ball-hi">Shakes: 0</span></div>
+      <div class="gcard gc3" onclick="openHorse()"><span class="gicon">🏀</span><div class="gtitle">HORSE Shootout</div><div class="gdesc">Hit the green zone!</div><div class="greward">$5/basket · $15 bonus</div><span class="ghigh" id="horse-hi">Best: 0 baskets</span></div>
+      <div class="gcard gc4" onclick="openSnake()"><span class="gicon">🐍</span><div class="gtitle">Snake</div><div class="gdesc">Eat apples, grow long, don't crash!</div><div class="greward">$1/apple · $20 high score bonus</div><span class="ghigh" id="snake-hi">Best: 0</span></div>
+    </div>
+  </div>
+
+  <!-- SKILLS PANE-->
+  <div class="pane" id="p-skills">
+    <div class="sec-title">🎓 Skills & Talents</div>
+    <div class="skills-layout" id="skills-layout"></div>
+    <div class="tricks-card"><div class="sec-title">🎪 Tricks</div><div class="trick-grid" id="trick-grid"></div></div>
+  </div>
+
+  <!-- MONEY PANE -->
+  <div class="pane" id="p-money">
+    <div class="money-layout">
+      <div class="money-card">
+        <div class="wallet-hero"><div class="wallet-amt" id="wallet-big">$150</div><div class="wallet-label">Current Balance</div></div>
+        <div class="goal-wrap" id="goal-wrap" style="display:none"><div class="goal-row"><span>Savings Goal</span><span id="goal-lbl">$0/$0</span></div><div class="goal-track"><div class="goal-fill" id="goal-fill" style="width:0%"></div></div></div>
+        <div style="margin-top:14px;">
+          <button class="big-action ba-shop" onclick="openM('shop-modal')">🛒 Visit Shop</button>
+          <button class="big-action ba-chore" onclick="openM('chore-modal')">🧹 Do a Chore</button>
+        <button class="big-action ba-badge full" onclick="openM('badges-modal')">🏆 View All Badges</button>
+        <button class="big-action ba-badge full" onclick="openReport()">📊 View Report</button>
+        </div>
+      </div>
+      <div class="money-card">
+        <div class="sec-title">📊 Spending</div>
+        <div id="exp-breakdown"><p style="color:var(--muted);font-size:.83rem;padding:7px 0;">No purchases yet!</p></div>
+        <div style="border-top:1px solid rgba(255,255,255,.06);margin-top:7px;padding-top:9px;display:flex;justify-content:space-between;font-weight:900;">
+          <span style="color:var(--muted);">Total Spent</span><span style="color:#ffb300;" id="total-spent">$0</span>
+        </div>
+        <div style="margin-top:13px;font-size:.72rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">Wealth History</div>
+        <canvas id="wealth-chart" height="75" style="width:100%;border-radius:7px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEATH -->
+<div id="death"><div class="death-wrap" id="death-wrap"></div></div>
+
+<!-- CHALLENGE MODAL -->
+<div class="challenge-overlay" id="challenge-overlay">
+  <div class="challenge-box" id="challenge-box"></div>
+</div>
+
+<!-- SHOP -->
+<div class="overlay" id="shop-modal"><div class="modal"><button class="modal-x" onclick="closeM('shop-modal')">✕</button><h2>🛒 Pet Shop</h2><div class="modal-sub" id="shop-sub">💰 Wallet: $0</div><div id="shop-items"></div></div></div>
+<!-- CHORES -->
+<div class="overlay" id="chore-modal"><div class="modal"><button class="modal-x" onclick="closeM('chore-modal')">✕</button><h2>🧹 Chores Board</h2><div class="modal-sub">Earn money for your pet's care!</div><div id="chore-items"></div></div></div>
+<!-- TIC-TAC-TOE -->
+<div class="overlay" id="ttt-modal"><div class="modal"><button class="modal-x" onclick="closeM('ttt-modal')">✕</button><h2>⭕ Tic Tac Toe</h2><div class="modal-sub">You are ✖ · Win=$20 · Draw=$5</div><div class="ttt-scores"><span class="ts-you">You: <span id="ttt-y">0</span></span><span class="ts-tie">Ties: <span id="ttt-t">0</span></span><span class="ts-ai">AI: <span id="ttt-a">0</span></span></div><div class="ttt-status" id="ttt-status">Your turn!</div><div class="ttt-board" id="ttt-board"></div><button class="pill full mt10" onclick="resetTTT()">🔄 New Game</button></div></div>
+<!-- BALL -->
+<div class="overlay" id="ball-modal"><div class="modal"><button class="modal-x" onclick="closeM('ball-modal')">✕</button><h2>🎱 Magic 8-Ball</h2><div class="modal-sub">Ask anything. +$3 per shake!</div><div><input class="ball-q" id="ball-q" type="text" placeholder="Type your question..."/><div class="ball8" id="ball8" onclick="shakeBall()"><div class="ball-inner"><div class="ball-8">8</div></div></div><div class="ball-ans" id="ball-ans">🔮 Tap the ball to see your fate...</div></div></div></div>
+<!-- HORSE -->
+<div class="overlay" id="horse-modal"><div class="modal"><button class="modal-x" onclick="closeM('horse-modal')">✕</button><h2>🏀 HORSE Shootout</h2><div class="modal-sub">Stop bar in green zone to score!</div><div class="horse-court"><div class="hoop">🪣</div><div><span class="horse-ball-disp" id="horse-ball">🏀</span></div><div class="horse-meta"><span>Baskets: <span class="baskets-ct" id="h-baskets">0</span></span><span class="horse-letters" id="h-word"></span></div></div><div class="power-wrap"><div class="power-lbl"><span>❌</span><span>⚠️</span><span style="color:#4dff6e">✅</span><span>⚠️</span><span>❌</span></div><div class="power-track"><div class="power-zones"><div class="zone-b"></div><div class="zone-o"></div><div class="zone-g"></div><div class="zone-o2"></div><div class="zone-b2"></div></div><div class="power-ind" id="h-ind" style="left:0%"></div></div></div><button class="shoot-btn" id="horse-shoot" onclick="horseShoot()">🏀 SHOOT!</button><div class="center mt10" style="font-size:.76rem;color:var(--muted);" id="h-result"></div></div></div>
+<!-- SNAKE -->
+<div class="overlay" id="snake-modal"><div class="modal wide"><button class="modal-x" onclick="closeM('snake-modal');stopSnake()">✕</button><h2>🐍 Snake</h2><div class="snake-meta"><span>Score: <span id="snake-score" style="color:#4dff6e;font-family:'Press Start 2P',monospace;font-size:.82rem">0</span></span><span style="color:var(--muted);font-size:.76rem;">Best: <span id="snake-best-disp" style="color:#ffb300">0</span></span></div><div class="center"><canvas id="snake-canvas" width="300" height="300"></canvas></div><div class="snake-controls"><div></div><button class="sc-btn" onclick="snakeDir(0,-1)">⬆</button><div></div><button class="sc-btn" onclick="snakeDir(-1,0)">⬅</button><button class="sc-btn" id="snake-pause-btn" onclick="toggleSnakePause()">⏸</button><button class="sc-btn" onclick="snakeDir(1,0)">➡</button><div></div><button class="sc-btn" onclick="snakeDir(0,1)">⬇</button><div></div></div><button class="pill full mt10" onclick="startSnake()">🔄 Restart</button></div></div>
+<!-- MARRIAGE -->
+<div class="overlay" id="marry-modal"><div class="modal"><h2>💕 A Special Visitor!</h2><div class="modal-sub" id="marry-sub"></div><span class="prop-emoji" id="prop-emoji"></span><p id="prop-text" style="text-align:center;font-weight:700;line-height:1.6;"></p><div class="choice-row"><button class="cbtn cbtn-yes" onclick="acceptMarry()">💍 Say Yes!</button><button class="cbtn cbtn-no" onclick="declineMarry()">🚶 Not now...</button></div></div></div>
+<!-- BADGES -->
+<div class="overlay" id="badges-modal"><div class="modal"><button class="modal-x" onclick="closeM('badges-modal')">✕</button><h2>🏆 Badges</h2><div class="modal-sub" id="badges-sub"></div><div id="badges-list"></div></div></div>
+<!-- SETTINGS -->
+<!-- SETTINGS -->
+<div class="overlay" id="settings-modal"><div class="modal"><button class="modal-x" onclick="closeM('settings-modal')">✕</button><h2>⚙️ Customize</h2><div class="sg-row"><label>Color Theme</label><div class="color-grid" id="sg-cg"><div class="cswatch" data-c="pink" style="background:#ff2d78"></div><div class="cswatch" data-c="orange" style="background:#ff6d00"></div><div class="cswatch" data-c="yellow" style="background:#ffd60a"></div><div class="cswatch" data-c="green" style="background:#39ff14"></div><div class="cswatch" data-c="blue" style="background:#00b4ff"></div><div class="cswatch" data-c="purple" style="background:#c77dff"></div><div class="cswatch" data-c="cyan" style="background:#00f5d4"></div><div class="cswatch" data-c="red" style="background:#ff073a"></div></div></div><div class="sg-row"><label>Accessory</label><div class="acc-grid" id="sg-ag"><div class="acc-opt" data-a="">🚫</div><div class="acc-opt" data-a="🎩">🎩</div><div class="acc-opt" data-a="👑">👑</div><div class="acc-opt" data-a="🎓">🎓</div><div class="acc-opt" data-a="🌸">🌸</div><div class="acc-opt" data-a="😎">😎</div></div></div>
+<hr style="border:1px solid rgba(255,255,255,.08);margin:16px 0;">
+<h3 style="font-family:'Fredoka One',cursive;font-size:1.1rem;margin-bottom:8px;">❓ Ask a Question</h3>
+<p style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Need help during the game? Ask anything!</p>
+<div style="display:flex;gap:8px;margin-bottom:10px;">
+  <input id="sg-qa-input" type="text" placeholder="e.g. How do I level up?"
+    onkeydown="if(event.key==='Enter') settingsAnswer()"
+    style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text);font-family:'Nunito',sans-serif;font-size:.85rem;outline:none;"/>
+  <button onclick="settingsAnswer()" style="background:var(--tp);color:white;border:none;padding:10px 16px;border-radius:10px;font-size:.85rem;cursor:pointer;font-weight:bold;font-family:'Nunito',sans-serif;">Ask</button>
+</div>
+<div id="sg-qa-answer" style="background:rgba(255,255,255,.05);border-left:4px solid var(--tp);border-radius:8px;padding:12px;font-size:.82rem;color:var(--text);display:none;line-height:1.6;"></div>
+</div></div>
+<script>
+// ═══ DATA ═════════════════════════
+const THEMES={pink:{p:'#ff2d78',g:'rgba(255,45,120,.5)',l:'rgba(255,45,120,.13)'},orange:{p:'#ff6d00',g:'rgba(255,109,0,.5)',l:'rgba(255,109,0,.13)'},yellow:{p:'#ffd60a',g:'rgba(255,214,10,.5)',l:'rgba(255,214,10,.13)'},green:{p:'#39ff14',g:'rgba(57,255,20,.5)',l:'rgba(57,255,20,.13)'},blue:{p:'#00b4ff',g:'rgba(0,180,255,.5)',l:'rgba(0,180,255,.13)'},purple:{p:'#c77dff',g:'rgba(199,125,255,.5)',l:'rgba(199,125,255,.13)'},cyan:{p:'#00f5d4',g:'rgba(0,245,212,.5)',l:'rgba(0,245,212,.13)'},red:{p:'#ff073a',g:'rgba(255,7,58,.5)',l:'rgba(255,7,58,.13)'}};
+const PETS={dog:{e:'🐶',cry:'Woof!',tricks:['Sit','Shake','Roll Over','Fetch','Speak','Spin','Back Flip']},cat:{e:'🐱',cry:'Meow!',tricks:['High Five','Spin','Jump','Wave','Fetch','Beg','Moonwalk']},bunny:{e:'🐰',cry:'Squeak!',tricks:['Binky','Stand','Spin','Beg','Dance','Flop','Hop-Hop']},dino:{e:'🦕',cry:'ROAR!',tricks:['Stomp','Tail Wag','Roar','Dig','Swim','Fire Breath','T-Pose']},fox:{e:'🦊',cry:'Yip!',tricks:['Pounce','Sly Grin','Hunt','Burrow','Howl','Sneak','Flip']},panda:{e:'🐼',cry:'Chu!',tricks:['Bamboo Roll','Cute Pose','Bear Hug','Slide','Clap','Yawn','Somersault']},dragon:{e:'🐲',cry:'RAWR!',tricks:['Fire Breath','Fly Loop','Tail Smash','Hoard','Breathe Ice','Wing Flap','Dragon Roar']},owl:{e:'🦉',cry:'Hoo!',tricks:['Head Spin','Swoop','Wisdom Pose','Night Vision','Hoot Song','Wing Span','Talon Grip']}};
+const DIFF={easy:{decay:.6,sick:.05},normal:{decay:1,sick:.08},hard:{decay:1.6,sick:.12}};
+const PARTNER_NAMES=['Luna','Max','Bella','Charlie','Daisy','Rocky','Rosie','Bruno','Cleo','Zeus','Mochi','Nala','Finn','Maple','Coco','Bear','Stella','Duke','Rio','Nova'];
+const ITEMS=[{n:'Kibble',p:5,c:'Food',stats:{hunger:20,happy:5}},{n:'Gourmet Meal',p:15,c:'Food',stats:{hunger:40,happy:15,health:5}},{n:'Tasty Treat',p:3,c:'Food',stats:{hunger:5,happy:20}},{n:'Snack Pack',p:8,c:'Food',stats:{hunger:15,happy:10,health:2}},{n:'Ball',p:10,c:'Toy',stats:{hungry:-5,happy:25,health:5,social:10}},{n:'Puzzle Toy',p:20,c:'Toy',stats:{happy:30,health:5,social:15}},{n:'Rope Toy',p:12,c:'Toy',stats:{happy:22,health:3,social:8}},{n:'Vitamin',p:12,c:'Health',stats:{health:20,happy:5}},{n:'Medicine',p:20,c:'Health',stats:{health:35,energy:10}},{n:'Shampoo',p:7,c:'Hygiene',stats:{hygiene:30,happy:10,health:10}},{n:'Spa Day',p:25,c:'Hygiene',stats:{hygiene:50,happy:25,health:15,social:20}}];
+const CHORES=[{n:'Do the dishes',r:10},{n:'Sweep the floor',r:8},{n:"Walk neighbor's dog",r:15},{n:'Take out trash',r:5},{n:'Water the plants',r:6},{n:'Organize bookshelf',r:12},{n:'Vacuum living room',r:9},{n:'Wash the car',r:18},{n:'Mow the lawn',r:20},{n:'Clean the windows',r:14},{n:'Cook dinner',r:16},{n:'Rake leaves',r:11}];
+const SKILL_CATS=[{k:'music',l:'🎵 Music',c:'#ff6bcb',subs:['Guitar 🎸','Piano 🎹','Singing 🎤','DJ 🎧']},{k:'sports',l:'⚽ Sports',c:'#00b4ff',subs:['Soccer ⚽','Basketball 🏀','Swimming 🏊','Tennis 🎾']},{k:'arts',l:'🎨 Arts',c:'#ffb300',subs:['Painting 🎨','Drawing ✏️','Dance 💃','Drama 🎭']},{k:'acad',l:'📚 Academics',c:'#69ff47',subs:['Math ➕','Science 🔬','Reading 📖','Coding 💻']}];
+const BADGES=[{id:'first',icon:'🐣',n:'First Steps',d:'Performed your first care action.'},{id:'play5',icon:'🎾',n:'Playful',d:'Played with your pet 5 times.'},{id:'bath3',icon:'🛁',n:'Squeaky Clean',d:'Bathed your pet 3 times.'},{id:'vet',icon:'🏥',n:'Vet Hero',d:'Took your pet to the vet.'},{id:'trick1',icon:'🎪',n:'First Trick',d:'Taught your first trick!'},{id:'tricks_all',icon:'🎓',n:'Trick Master',d:'Taught ALL tricks!'},{id:'skill1',icon:'🎵',n:'First Skill',d:'Leveled up a skill.'},{id:'skill_all',icon:'⭐',n:'Skill Legend',d:'Mastered all categories!'},{id:'saver',icon:'💰',n:'Saver',d:'Wallet reached $50.'},{id:'chore5',icon:'🧹',n:'Chore Star',d:'Completed 5 chores.'},{id:'married',icon:'💍',n:'True Love',d:'Your pet got married!'},{id:'parent',icon:'👶',n:'Parent',d:'Your pet had a baby!'},{id:'gamer',icon:'🎮',n:'All-Star Gamer',d:'Won all 4 mini-games!'},{id:'ttt_win',icon:'⭕',n:'TTT Champion',d:'Won Tic Tac Toe!'},{id:'snake20',icon:'🐍',n:'Snake Charmer',d:'Scored 20+ in Snake!'},{id:'centenarian',icon:'🎂',n:'100 Turns!',d:'Survived 100 turns.'},{id:'survivor',icon:'💪',n:'Survivor',d:'Recovered from critical health!'},{id:'streak10',icon:'🔥',n:'On Fire!',d:'10-turn care streak!'},{id:'rich',icon:'💎',n:'Rich',d:'Wallet reached $500!'},{id:'perfectrhythm',icon:'🎯',n:'Perfect Timing',d:'Got PERFECT on a rhythm challenge!'},{id:'masher',icon:'👊',n:'Button Masher',d:'Maxed out the mash bar!'}];
+const BALL_ANSWERS=['It is certain!','Without a doubt!','Absolutely YES!','Signs point to yes.','Most likely.','Outlook good.','Ask again later...','Reply hazy.','Cannot predict now.','Better not tell you.','Don\'t count on it.','My sources say NO.','Outlook not so good.','Very doubtful.','Definitely not.','Concentrate and ask again.','The stars align!','Only if you believe.'];
+
+// ═══ ACTIONS CONFIG ═══════════════
+const ACTION_CFG={
+  feed:{icon:'🍖',label:'Feeding Time!',type:'mash',mashTarget:8,mashTime:4,sub:'Mash to fill the bowl for your pet!',applyFn:(mul)=>{pet.hunger=clamp(pet.hunger+Math.round(25*mul),0,100);pet.happy=clamp(pet.happy+Math.round(8*mul),0,100);owner.careCount++;owner.careStreak++;xpGain(8);notify(`🍖 ${pet.name} gobbles up the food! +${Math.round(25*mul)} hunger`);spawnP('🍖',4);}},
+  play:{icon:'🎾',label:'Playtime!',type:'rhythm',rhythmCount:3,sub:'Tap when the ball hits the green zone!',applyFn:(mul)=>{if(pet.energy<15){notify(`😩 Too tired to play!`);return;}pet.energy=clamp(pet.energy-rand(10,18),0,100);pet.happy=clamp(pet.happy+Math.round(28*mul),0,100);pet.social=clamp(pet.social+Math.round(12*mul),0,100);pet.hunger=clamp(pet.hunger-rand(5,10),0,100);owner.playCount++;owner.careCount++;owner.careStreak++;xpGain(10);notify(`🎾 ${pet.name} plays hard! +${Math.round(28*mul)} happiness`);spawnP('🎾',5);}},
+  rest:{icon:'😴',label:'Nap Time!',type:'rhythm',rhythmCount:2,sub:'Tap gently as your pet drifts off...',applyFn:(mul)=>{const g=Math.round(30*mul);pet.energy=clamp(pet.energy+g,0,100);owner.careStreak++;xpGain(4);notify(`😴 ${pet.name} naps peacefully! +${g} energy`);}},
+  bath:{icon:'🛁',label:'Bath Time!',type:'mash',mashTarget:8,mashTime:4,sub:'Scrub-a-dub-dub! Mash to wash your pet!',cost:7,applyFn:(mul)=>{pet.hygiene=clamp(pet.hygiene+Math.round(35*mul),0,100);pet.happy=clamp(pet.happy+Math.round(10*mul),0,100);pet.health=clamp(pet.health+Math.round(8*mul),0,100);owner.bathCount++;owner.careCount++;owner.careStreak++;xpGain(10);notify(`🛁 ${pet.name} is squeaky clean! +${Math.round(35*mul)} hygiene (-$7)`);spawnP('✨',5);}},
+  vet:{icon:'🏥',label:'Vet Visit!',type:'rhythm',rhythmCount:3,sub:'Follow the vet\'s timing checks!',cost:50,applyFn:(mul)=>{pet.health=clamp(pet.health+Math.round(55*mul),0,100);if(pet.sick){pet.sick=false;addEvent('💊','Recovered!',`${pet.name} is healthy again!`,'good',true);}owner.vetVisited=true;owner.careCount++;owner.careStreak++;xpGain(15);notify(`🏥 Vet done! +${Math.round(55*mul)} health (-$50)`);}},
+  groom:{icon:'✂️',label:'Grooming!',type:'rhythm',rhythmCount:2,sub:'Snip snip! Time it right for a perfect cut!',cost:10,applyFn:(mul)=>{pet.hygiene=clamp(pet.hygiene+Math.round(22*mul),0,100);pet.happy=clamp(pet.happy+Math.round(18*mul),0,100);pet.social=clamp(pet.social+Math.round(10*mul),0,100);owner.careStreak++;xpGain(8);notify(`✂️ ${pet.name} looks fabulous!`);spawnP('💫',4);}},
+  meditate:{icon:'🧘',label:'Meditation!',type:'rhythm',rhythmCount:3,sub:'Find inner peace — tap at the peak!',applyFn:(mul)=>{if(pet.energy<20){notify(`😩 Too tired to meditate!`);return;}pet.energy=clamp(pet.energy-10,0,100);pet.happy=clamp(pet.happy+Math.round(22*mul),0,100);pet.health=clamp(pet.health+Math.round(12*mul),0,100);pet.social=clamp(pet.social+5,0,100);owner.careStreak++;xpGain(12);notify(`🧘 ${pet.name} finds inner peace!`);spawnP('🌀',4);}},
+  explore:{icon:'🗺️',label:'Adventure!',type:'mash',mashTarget:10,mashTime:5,sub:'Mash to adventure further and find more treasure!',applyFn:(mul)=>{if(pet.energy<25){notify(`😩 Too tired to explore!`);return;}pet.energy=clamp(pet.energy-rand(15,22),0,100);const bonus=Math.round(rand(3,18)*mul);owner.wallet+=bonus;pet.happy=clamp(pet.happy+Math.round(15*mul),0,100);pet.social=clamp(pet.social+Math.round(12*mul),0,100);owner.careStreak++;xpGain(15);const finds=['found treasure 🪙','met a new friend 🤝','found a secret garden 🌸','discovered something shiny ✨','found buried treasure 💎'];notify(`🗺️ ${pet.name} ${finds[rand(0,finds.length-1)]}! +$${bonus}`);addEvent('🗺️','Adventure!',`${pet.name} explored and earned $${bonus}!`,'good',false);spawnP('⭐',6);}},
+  sing:{icon:'🎵',label:'Singing!',type:'mash',mashTarget:6,mashTime:3,sub:'Mash to keep the melody going!',applyFn:(mul)=>{pet.happy=clamp(pet.happy+Math.round(18*mul),0,100);pet.social=clamp(pet.social+Math.round(15*mul),0,100);owner.careStreak++;xpGain(10);const songs=['a pop banger 🎤','a lullaby 🌙','an opera piece 🎭','a rap verse 🔥'];notify(`🎵 ${pet.name} belts out ${songs[rand(0,songs.length-1)]}!`);spawnP('🎵',5);}},
+};
+
+// ═══ STATE ═══════════════════════
+let pet,owner,turn,events,pendingMarry,diff='normal';
+let selType='dog',selColor='pink',selAcc='';
+let tttSc={y:0,a:0,t:0},tttBoard,tttOver;
+let horsePow=0,horseDir=1,horseIv=null,horseRun=false,horseBaskets=0,horseHorse='';
+let snakeIv=null,snake,snakeFood,snakeVx=1,snakeVy=0,snakeRunning=false,snakePaused=false,snakeScore=0,snakeBest=0;
+const SNAKE_GRID=15;
+let wealthHistory=[];
+let challengeAction=null,challengeTimers=[];
+
+// ═══ STARS ═══════════════════════
+(()=>{const c=document.getElementById('stars');for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2.5+.5;s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${-Math.random()*6}s`;c.appendChild(s);}})();
+
+// ═══ SETUP ═══════════════════════
+document.querySelectorAll('#pet-grid .pet-opt').forEach(el=>el.onclick=()=>{document.querySelectorAll('#pet-grid .pet-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selType=el.dataset.t;});
+document.querySelectorAll('#cg .cswatch').forEach(el=>el.onclick=()=>{document.querySelectorAll('#cg .cswatch').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selColor=el.dataset.c;applyTheme(selColor);});
+document.querySelectorAll('#ag .acc-opt').forEach(el=>el.onclick=()=>{document.querySelectorAll('#ag .acc-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selAcc=el.dataset.a;});
+document.querySelectorAll('#diff-row .diff-btn').forEach(el=>el.onclick=()=>{document.querySelectorAll('#diff-row .diff-btn').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');diff=el.dataset.d;});
+
+function startGame(){
+  const oName=document.getElementById('i-owner').value.trim();
+  const pName=document.getElementById('i-petname').value.trim();
+  const budget=parseInt(document.getElementById('i-budget').value);
+
+  if(!oName){alert('Please enter your name!');document.getElementById('i-owner').focus();return;}
+  if(!pName){alert("Please enter your pet's name!");document.getElementById('i-petname').focus();return;}
+  if(!budget||budget<50||budget>500){alert('Please enter a starting budget between $50 and $500!');document.getElementById('i-budget').focus();return;}
+  const goal=parseInt(document.getElementById('i-goal').value)||0;
+  pet={name:pName,type:selType,color:selColor,acc:selAcc,hunger:70,happy:70,health:80,energy:80,hygiene:70,social:60,age:0,level:1,xp:0,stage:'Baby',tricks:[],availTricks:[...PETS[selType].tricks],skills:{music:[0,0,0,0],sports:[0,0,0,0],arts:[0,0,0,0],acad:[0,0,0,0]},skillXP:{music:[0,0,0,0],sports:[0,0,0,0],arts:[0,0,0,0],acad:[0,0,0,0]},married:false,partner:null,children:0,pregnantIn:-1,sick:false,alive:true};
+  owner={name:oName,wallet:budget,spent:0,goal,log:[],badges:new Set(),playCount:0,bathCount:0,choreCount:0,careCount:0,vetVisited:false,wonTTT:false,wonBall:false,wonHorse:false,wonSnake:false,careStreak:0,goodTurns:0};
+  turn=0;events=[];pendingMarry=null;wealthHistory=[budget];
+  applyTheme(selColor);
+  document.getElementById('setup').style.display='none';
+  document.getElementById('game').style.display='block';
+  buildShopUI();buildChoreUI();buildSkillsUI();buildTrickGrid();syncSettings();
+  addEvent('🐣','Born!',`${pName} has entered the world! Your adventure begins!`,'special',true);
+  updateUI();
+  notify(`${PETS[selType].e} ${pName} says: ${PETS[selType].cry} Let's go!`);
+}
+function applyTheme(c){const t=THEMES[c];document.documentElement.style.setProperty('--tp',t.p);document.documentElement.style.setProperty('--tg',t.g);document.documentElement.style.setProperty('--tl',t.l);}
+
+// ═══ MINI-CHALLENGE SYSTEM ═══════
+function startChallenge(actionKey){
+  const cfg=ACTION_CFG[actionKey];if(!cfg)return;
+  // Cost check
+  if(cfg.cost&&owner.wallet<cfg.cost){notify(`❌ Need $${cfg.cost} for this!`);return;}
+  if(actionKey==='play'&&pet.energy<15){notify(`😩 ${pet.name} is too tired to play!`);return;}
+  if(actionKey==='meditate'&&pet.energy<20){notify(`😩 Not enough energy!`);return;}
+  if(actionKey==='explore'&&pet.energy<25){notify(`😩 Too tired to explore!`);return;}
+  challengeAction=actionKey;
+  if(cfg.cost){owner.wallet-=cfg.cost;owner.spent+=cfg.cost;owner.log.push({n:cfg.label,p:cfg.cost,c:'Care'});}
+  if(cfg.type==='rhythm') openRhythmChallenge(cfg);
+  else openMashChallenge(cfg);
+}
+
+// ─── RHYTHM CHALLENGE ─────────────
+let rhythmPos=0,rhythmSpeed=1.8,rhythmDir=1,rhythmIv=null,rhythmCount=0,rhythmTotal=0,rhythmHits=0,rhythmDone=false,rhythmCfg=null;
+function openRhythmChallenge(cfg){
+  rhythmTotal=cfg.rhythmCount;rhythmHits=0;rhythmCount=0;rhythmDone=false;rhythmCfg=cfg;rhythmPos=0;rhythmDir=1;
+  rhythmSpeed=0.7+Math.random()*.4;
+  renderChallengeBox('rhythm');
+  document.getElementById('challenge-overlay').classList.add('open');
+  startRhythmLoop();
+}
+function startRhythmLoop(){
+  if(rhythmIv)clearInterval(rhythmIv);
+  rhythmIv=setInterval(()=>{
+    if(rhythmDone)return;
+    rhythmPos+=rhythmDir*rhythmSpeed;
+    if(rhythmPos>=100){rhythmPos=100;rhythmDir=-1;}
+    if(rhythmPos<=0){rhythmPos=0;rhythmDir=1;}
+    const dot=document.getElementById('r-dot');
+    if(dot) dot.style.left=`calc(${rhythmPos}% - 22px)`;
+  },16);
+}
+function rhythmTap(){
+  if(rhythmDone)return;
+  rhythmCount++;
+  const inZone=rhythmPos>=35&&rhythmPos<=65;
+  const nearZone=rhythmPos>=20&&rhythmPos<=80;
+  let quality=inZone?'perfect':nearZone?'good':'miss';
+  const attDots=document.querySelectorAll('.ratt');
+  if(attDots[rhythmCount-1]) attDots[rhythmCount-1].innerHTML=inZone?'✅':nearZone?'⚠️':'❌';
+  if(inZone) rhythmHits+=1; else if(nearZone) rhythmHits+=.5;
+  const fb=document.getElementById('r-feedback');
+  if(fb){
+    fb.textContent=inZone?'🎯 PERFECT!':nearZone?'😅 Close!':'❌ Miss!';
+    fb.style.color=inZone?'#4dff6e':nearZone?'#ffb300':'#ff5252';
+  }
+  if(inZone) badge('perfectrhythm');
+  if(rhythmCount>=rhythmTotal){
+    rhythmDone=true;clearInterval(rhythmIv);
+    setTimeout(()=>finishRhythm(),600);
+  } else {
+    rhythmSpeed=0.6+Math.random()*.5;
+    if(rhythmDir<0) rhythmDir=1;
+  }
+}
+function finishRhythm(){
+  const mul=rhythmHits/rhythmTotal;
+  const grade=mul>=0.9?'PERFECT!':mul>=0.6?'Great!':mul>=0.3?'Okay':' Missed...';
+  const cls=mul>=0.9?'result-great':mul>=0.6?'result-ok':'result-bad';
+  const box=document.getElementById('challenge-box');
+  const cfg=rhythmCfg;
+  box.innerHTML=`
+    <span class="ch-icon" style="animation:none">${cfg.icon}</span>
+    <div class="ch-title">${grade}</div>
+    <div class="ch-sub">You hit ${Math.round(rhythmHits)}/${rhythmTotal} beats perfectly</div>
+    <div class="result-box ${cls}">${mul>=0.9?'🌟 Bonus stats for perfect timing!':mul>=0.6?'👍 Solid effort!':'💨 Better luck next time!'}</div>
+    <button class="ch-close-btn" onclick="closeChallengeAndApply(${mul})">✅ Finish!</button>`;
+}
+
+// ─── MASH CHALLENGE ───────────────
+let mashCount=0,mashTarget=0,mashIv=null,mashDone=false,mashTimeLeft=0,mashCfg=null;
+function openMashChallenge(cfg){
+  mashCount=0;mashTarget=cfg.mashTarget;mashDone=false;mashCfg=cfg;mashTimeLeft=cfg.mashTime;
+  renderChallengeBox('mash');
+  document.getElementById('challenge-overlay').classList.add('open');
+  if(mashIv)clearInterval(mashIv);
+  mashIv=setInterval(()=>{
+    mashTimeLeft=Math.max(0,mashTimeLeft-.1);
+    const tEl=document.getElementById('mash-timer-val');
+    if(tEl) tEl.textContent=mashTimeLeft.toFixed(1);
+    if(mashTimeLeft<=0&&!mashDone){mashDone=true;clearInterval(mashIv);setTimeout(finishMash,400);}
+  },100);
+}
+function doMash(){
+  if(mashDone)return;
+  mashCount++;
+  const pct=Math.min(mashCount/mashTarget*100,100);
+  const fill=document.getElementById('mash-fill');
+  const ct=document.getElementById('mash-ct');
+  if(fill) fill.style.width=pct+'%';
+  if(ct) ct.textContent=mashCount;
+  if(pct>=100){badge('masher');}
+  if(mashCount>=mashTarget&&!mashDone){mashDone=true;clearInterval(mashIv);setTimeout(finishMash,300);}
+}
+function finishMash(){
+  const mul=Math.min(mashCount/mashTarget,1);
+  const grade=mul>=1?'Maxed Out!':mul>=.7?'Great!':mul>=.4?'Okay':'Keep trying!';
+  const cls=mul>=1?'result-great':mul>=.7?'result-ok':'result-bad';
+  const cfg=mashCfg;
+  document.getElementById('challenge-box').innerHTML=`
+    <span class="ch-icon" style="animation:none">${cfg.icon}</span>
+    <div class="ch-title">${grade}</div>
+    <div class="ch-sub">${mashCount} / ${mashTarget} taps — ${Math.round(mul*100)}%</div>
+    <div class="result-box ${cls}">${mul>=1?'🌟 Full power stats!':mul>=.7?'👍 Nice effort!':'💨 More taps next time!'}</div>
+    <button class="ch-close-btn" onclick="closeChallengeAndApply(${mul})">✅ Finish!</button>`;
+}
+function closeChallengeAndApply(mul){
+  document.getElementById('challenge-overlay').classList.remove('open');
+  if(challengeAction&&ACTION_CFG[challengeAction]){ACTION_CFG[challengeAction].applyFn(mul);if(owner.careCount>=1)badge('first');}
+  challengeAction=null;bounceEmoji();checkBadges();tick();updateUI();
+}
+
+function renderChallengeBox(type){
+  const cfg=type==='rhythm'?rhythmCfg:mashCfg;
+  const box=document.getElementById('challenge-box');
+  if(type==='rhythm'){
+    const dots=Array.from({length:rhythmTotal},(_,i)=>`<div class="ratt" id="ratt-${i}"></div>`).join('');
+    box.innerHTML=`
+      <span class="ch-icon">${cfg.icon}</span>
+      <div class="ch-title">${cfg.label}</div>
+      <div class="ch-sub">${cfg.sub}</div>
+      <div class="rhythm-attempts">${dots}</div>
+      <div class="rhythm-track">
+        <div class="rhythm-zone"></div>
+        <div class="rhythm-dot" id="r-dot" style="left:0%"></div>
+      </div>
+      <div class="rhythm-feedback" id="r-feedback">Get ready...</div>
+      <button class="rhythm-hit-btn" onclick="rhythmTap()">🎯 TAP!</button>`;
+  } else {
+    box.innerHTML=`
+      <span class="ch-icon">${cfg.icon}</span>
+      <div class="ch-title">${cfg.label}</div>
+      <div class="ch-sub">${cfg.sub}</div>
+      <div class="mash-timer">Time left: <span id="mash-timer-val" style="color:var(--tp)">${mashTimeLeft.toFixed(1)}</span>s</div>
+      <div class="mash-progress"><div class="mash-fill" id="mash-fill" style="width:0%"></div></div>
+      <div class="mash-count" id="mash-ct">0</div>
+      <button class="mash-btn" onclick="doMash()">👊 MASH!</button>`;
+  }
+}
+// Close on background click for challenge
+document.getElementById('challenge-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('challenge-overlay')&&(rhythmDone||mashDone)){closeChallengeAndApply(0);}
+});
+
+// ═══ TICK ═════════════════════════
+function tick(){
+  if(!pet.alive)return;
+  const d=DIFF[diff];
+  pet.hunger=clamp(pet.hunger-rand(4,11)*d.decay,0,100);
+  pet.happy=clamp(pet.happy-rand(3,7)*d.decay,0,100);
+  pet.energy=clamp(pet.energy-rand(2,5)*d.decay,0,100);
+  pet.hygiene=clamp(pet.hygiene-rand(2,5)*d.decay,0,100);
+  pet.social=clamp(pet.social-rand(1,4)*d.decay,0,100);
+  if(pet.hunger<20) pet.health=clamp(pet.health-rand(3,8),0,100);
+  if(pet.hygiene<20) pet.health=clamp(pet.health-rand(1,4),0,100);
+  if(pet.sick) pet.health=clamp(pet.health-rand(2,6),0,100);
+  pet.age++;turn++;xpGain(5);checkEvolution();randomEvents();checkBadges();
+  wealthHistory.push(owner.wallet);if(wealthHistory.length>30)wealthHistory.shift();
+  drawWealthChart();
+  if(pet.health<=0&&pet.alive){pet.alive=false;addEvent('💀','Passed Away',`${pet.name} has passed away after ${pet.age} turns.`,'death',true);setTimeout(showDeath,800);}
+  if(pet.alive&&pet.age>=250){pet.alive=false;addEvent('🌟','Peacefully Passed',`${pet.name} lived ${pet.age} turns and passed peacefully.`,'death',true);setTimeout(showDeath,800);}
+  updateUI();
+}
+function xpGain(n){pet.xp+=n;const need=pet.level*50;if(pet.xp>=need){pet.level++;pet.xp=0;notify(`🌟 LEVEL UP! ${pet.name} is Level ${pet.level}!`);}}
+function checkEvolution(){const was=pet.stage;if(pet.level>=12)pet.stage='Elder';else if(pet.level>=7)pet.stage='Adult';else if(pet.level>=3)pet.stage='Teen';else pet.stage='Baby';if(pet.stage!==was)addEvent('✨','Evolved!',`${pet.name} grew into a ${pet.stage}!`,'special',true);}
+
+// ═══ PET POKE ════════════════════
+function petPoke(){if(!pet?.alive)return;pet.happy=clamp(pet.happy+rand(2,6),0,100);pet.social=clamp(pet.social+rand(3,7),0,100);notify(`${PETS[pet.type].e} ${pet.name}: ${PETS[pet.type].cry}`);spawnP('💕',3);bounceEmoji();}
+function spawnP(emoji,n){const wrap=document.querySelector('.pet-world');if(!wrap)return;const r=wrap.getBoundingClientRect();for(let i=0;i<n;i++){const p=document.createElement('div');p.className='particle';p.textContent=emoji;const dx=(Math.random()-.5)*80,dy=-(Math.random()*60+30);p.style.cssText=`left:${r.width/2}px;top:${r.height/2}px;--dx:${dx}px;--dy:${dy}px`;wrap.appendChild(p);setTimeout(()=>p.remove(),1000);}}
+function bounceEmoji(){const e=document.getElementById('pet-emoji');if(!e)return;e.classList.remove('bounce-it');void e.offsetWidth;e.classList.add('bounce-it');}
+
+// ═══ SHOP ════════════════════════
+function buildShopUI(){const cats=[...new Set(ITEMS.map(i=>i.c))];let h='';cats.forEach(cat=>{h+=`<div class="shop-cat-hdr">${cat}</div>`;ITEMS.filter(i=>i.c===cat).forEach(item=>{const fx=Object.entries(item.stats||{}).filter(([,v])=>v>0).map(([k,v])=>`+${v} ${k}`).join(' · ');const cant=owner.wallet<item.p;h+=`<div class="shop-item" onclick="buyItem('${item.n}')"><div><div class="si-name">${item.n}</div><div class="si-fx">${fx||'Special item'}</div></div><div class="si-price${cant?' cant':''}">$${item.p}</div></div>`;});});document.getElementById('shop-items').innerHTML=h;}
+function buyItem(name){const item=ITEMS.find(i=>i.n===name);if(!item)return;if(owner.wallet<item.p){notify(`❌ Need $${item.p}!`);return;}owner.wallet-=item.p;owner.spent+=item.p;owner.log.push({n:item.n,p:item.p,c:item.c});Object.entries(item.stats||{}).forEach(([k,v])=>{if(k==='hunger')pet.hunger=clamp(pet.hunger+v,0,100);else if(k==='happy')pet.happy=clamp(pet.happy+v,0,100);else if(k==='health')pet.health=clamp(pet.health+v,0,100);else if(k==='hygiene')pet.hygiene=clamp(pet.hygiene+v,0,100);else if(k==='energy')pet.energy=clamp(pet.energy+v,0,100);else if(k==='social')pet.social=clamp(pet.social+v,0,100);});owner.careCount++;owner.careStreak++;if(owner.careCount===1)badge('first');xpGain(10);notify(`✅ Bought ${item.n} for $${item.p}!`);spawnP('🛒',3);bounceEmoji();closeM('shop-modal');buildShopUI();tick();}
+
+// ═══ CHORES ═══════════════════════
+function buildChoreUI(){const pool=[...CHORES].sort(()=>Math.random()-.5).slice(0,5);window._chores=pool;document.getElementById('chore-items').innerHTML=pool.map((c,i)=>`<div class="chore-item" onclick="doChore(${i})"><span class="ci-name">${c.n}</span><span class="ci-earn">+$${c.r}</span></div>`).join('');}
+function doChore(i){const c=window._chores[i];if(!c)return;owner.wallet+=c.r;owner.choreCount++;owner.careStreak++;xpGain(5);notify(`💵 Earned $${c.r} — "${c.n}"!`);addEvent('🧹','Chore Done!',`You completed "${c.n}" and earned $${c.r}!`,'good',false);closeM('chore-modal');tick();}
+
+// ═══ SKILLS ════════════════════════
+function buildSkillsUI(){document.getElementById('skills-layout').innerHTML=SKILL_CATS.map(cat=>{const rows=cat.subs.map((sub,i)=>{const lv=pet.skills[cat.k][i],xp=pet.skillXP[cat.k][i],pct=lv>=5?100:Math.round(xp/30*100);return`<div class="skill-item"><div class="skill-hdr"><span class="skill-name">${sub}</span><span class="skill-lvl" style="color:${cat.c}">Lv.${lv}</span></div><div class="skill-bar-row"><div class="strack"><div class="sfill" id="sf-${cat.k}-${i}" style="width:${pct}%;background:linear-gradient(90deg,${cat.c}80,${cat.c})"></div></div><button class="prac-btn" id="pb-${cat.k}-${i}" onclick="practiceSkill('${cat.k}',${i})" ${pet.energy<20||lv>=5?'disabled':''}>Practice</button></div></div>`;}).join('');return`<div class="scat-card"><div class="scat-title" style="color:${cat.c}">${cat.l}</div>${rows}</div>`;}).join('');}
+function updateSkillBars(){SKILL_CATS.forEach(cat=>cat.subs.forEach((_,i)=>{const lv=pet.skills[cat.k][i],xp=pet.skillXP[cat.k][i],pct=lv>=5?100:Math.round(xp/30*100);const b=document.getElementById(`sf-${cat.k}-${i}`),pb=document.getElementById(`pb-${cat.k}-${i}`);if(b)b.style.width=pct+'%';if(pb)pb.disabled=pet.energy<20||lv>=5;}));}
+function practiceSkill(catK,idx){if(pet.energy<20){notify(`😩 Need more energy!`);return;}if(owner.wallet<5){notify(`❌ Need $5 for practice.`);return;}owner.wallet-=5;owner.spent+=5;owner.log.push({n:'Practice',p:5,c:'Skills'});pet.energy=clamp(pet.energy-20,0,100);const gain=rand(8,15);pet.skillXP[catK][idx]+=gain;const cat=SKILL_CATS.find(c=>c.k===catK);if(pet.skillXP[catK][idx]>=30&&pet.skills[catK][idx]<5){pet.skillXP[catK][idx]=0;pet.skills[catK][idx]++;const lv=pet.skills[catK][idx];notify(`🌟 ${pet.name} hit Level ${lv} in ${cat.subs[idx]}!`);addEvent(cat.l.split(' ')[0],'Skill Up!',`${pet.name} reached Level ${lv} in ${cat.subs[idx]}!`,'special',true);xpGain(25);badge('skill1');if(SKILL_CATS.every(c=>c.subs.some((_,i)=>pet.skills[c.k][i]>=3)))badge('skill_all');}else{notify(`📚 Practiced ${cat.subs[idx]}! (+${gain} XP, -$5)`);}xpGain(8);updateSkillBars();tick();}
+
+// ═══ TRICKS ════════════════════════
+function buildTrickGrid(){const all=PETS[pet.type].tricks;document.getElementById('trick-grid').innerHTML=all.map(t=>{const learned=pet.tricks.includes(t),avail=!learned&&pet.availTricks.includes(t);return`<div class="titem ${learned?'learned':avail?'available':'locked'}" ${avail?`onclick="teachTrick('${t}')"`:''}>${learned?'✅':avail?'➕':'🔒'} ${t}</div>`;}).join('');}
+function teachTrick(t){if(pet.energy<20){notify('😩 Too tired!');return;}if(pet.happy<30){notify('😟 Needs to be happier. Play first!');return;}if(owner.wallet<8){notify('❌ Need $8 for training.');return;}owner.wallet-=8;owner.spent+=8;owner.log.push({n:'Trick Training',p:8,c:'Training'});pet.availTricks=pet.availTricks.filter(x=>x!==t);pet.tricks.push(t);pet.energy=clamp(pet.energy-20,0,100);pet.happy=clamp(pet.happy+10,0,100);xpGain(30);notify(`🎪 ${pet.name} learned "${t}"!`);addEvent('🎪','New Trick!',`${pet.name} learned: "${t}"!`,'good',true);badge('trick1');if(pet.tricks.length===PETS[pet.type].tricks.length)badge('tricks_all');spawnP('🎪',5);bounceEmoji();buildTrickGrid();tick();}
+
+// ═══ EVENTS ════════════════════════
+function addEvent(icon,title,desc,type,imp){events.unshift({icon,title,desc,type,turn,imp});if(events.length>80)events.pop();renderEvents();}
+let activeFilter='all';
+function renderEvents(){const el=document.getElementById('elist');const filtered=activeFilter==='all'?events:events.filter(e=>e.type===activeFilter);if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:34px;color:var(--muted);">No events here yet!</div>';return;}el.innerHTML=filtered.map(e=>`<div class="eitem ${e.type}"><div class="eicon">${e.icon}</div><div class="ebody"><div class="et">${e.title}</div><div class="ed">${e.desc}</div><div class="en">Turn ${e.turn}</div></div></div>`).join('');}
+document.querySelectorAll('.lf-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.lf-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');activeFilter=b.dataset.f;renderEvents();});
+
+// ═══ RANDOM EVENTS ════════════════
+function randomEvents(){
+  const d=DIFF[diff];
+  if(pet.age>0&&pet.age%20===0){const y=Math.floor(pet.age/20);addEvent('🎂','Birthday!',`${pet.name} is now ${y} year${y>1?'s':''} old! 🎊`,'special',true);pet.happy=clamp(pet.happy+15,0,100);if(pet.age===100)badge('centenarian');}
+  if(!pet.sick&&Math.random()<d.sick&&pet.hygiene<45){pet.sick=true;addEvent('🤒','Got Sick!',`${pet.name} caught something. Visit the vet!`,'bad',true);notify(`⚠️ ${pet.name} is SICK!`);}
+  if(pet.sick&&pet.health>85){pet.sick=false;addEvent('💪','Self-Recovery!',`${pet.name} fought it off!`,'good',true);badge('survivor');}
+  if(Math.random()<.07){const b=rand(5,25);owner.wallet+=b;addEvent('🍀','Lucky Day!',`${pet.name} found $${b}!`,'good',false);}
+  if(Math.random()<.05&&owner.wallet>10){const l=rand(5,15);owner.wallet-=l;addEvent('😬','Oops!',`${pet.name} chewed something worth $${l}!`,'bad',false);}
+  if(Math.random()<.07&&pet.happy>65&&pet.social>50){const names=['Fluffy','Bolt','Kira','Biscuit','Pepper'];const fn=names[rand(0,names.length-1)];addEvent('💕','New Friend!',`${pet.name} made friends with ${fn}!`,'good',true);pet.happy=clamp(pet.happy+12,0,100);pet.social=clamp(pet.social+15,0,100);}
+  if(Math.random()<.04&&pet.level>3){const wins=['won a talent show 🏆','went viral online 📱','won pet of the month 🌟'];addEvent('🏅','Achievement!',`${pet.name} ${wins[rand(0,wins.length-1)]}!`,'special',true);pet.happy=clamp(pet.happy+15,0,100);xpGain(20);}
+  if(!pet.married&&!pendingMarry&&pet.age>=40&&pet.level>=4&&Math.random()<.08){const pn=PARTNER_NAMES[rand(0,PARTNER_NAMES.length-1)];pendingMarry={name:pn};showMarry(pn);}
+  if(pet.married&&pet.pregnantIn<0&&pet.age>=60&&Math.random()<.1){pet.pregnantIn=turn+5;addEvent('🤰','Baby on the Way!',`${pet.name} and ${pet.partner} are expecting in 5 turns!`,'special',true);}
+  if(pet.pregnantIn>0&&turn>=pet.pregnantIn){pet.pregnantIn=-1;pet.children++;const bnames=['Pip','Dot','Bun','Kit','Tiny','Pebble','Nova'];const bn=bnames[rand(0,bnames.length-1)];addEvent('👶','Baby Born!',`${pet.name} and ${pet.partner} welcome ${bn}! 🍼`,'special',true);pet.happy=clamp(pet.happy+25,0,100);badge('parent');}
+  if(pet.age===80)addEvent('🌅','Mid-Life',`${pet.name} reflects on life's journey...`,'special',false);
+}
+
+// ═══ MARRIAGE ════════════════════
+function showMarry(pn){document.getElementById('marry-sub').textContent=`Someone special noticed ${pet.name}!`;document.getElementById('prop-emoji').textContent=PETS[pet.type].e;document.getElementById('prop-text').innerHTML=`<strong>${pn}</strong> has fallen for ${pet.name}!<br>They want to spend forever together. 💕`;openM('marry-modal');}
+function acceptMarry(){pet.married=true;pet.partner=pendingMarry.name;pet.happy=clamp(pet.happy+30,0,100);addEvent('💍','Married!',`${pet.name} and ${pet.partner} tied the knot! 🎊`,'special',true);badge('married');pendingMarry=null;closeM('marry-modal');tick();}
+function declineMarry(){addEvent('💔','Declined',`${pet.name} wasn't ready yet.`,'bad',false);pendingMarry=null;closeM('marry-modal');}
+
+// ═══ BADGES ══════════════════════
+function badge(id){if(!owner||owner.badges.has(id))return;owner.badges.add(id);const b=BADGES.find(x=>x.id===id);if(!b)return;const t=document.getElementById('badge-toast');t.textContent=`🏆 Badge Unlocked: ${b.n}!`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);updateBadgePreview();}
+function checkBadges(){if(owner.playCount>=5)badge('play5');if(owner.bathCount>=3)badge('bath3');if(owner.choreCount>=5)badge('chore5');if(owner.vetVisited)badge('vet');if(owner.wallet>=50)badge('saver');if(owner.wallet>=500)badge('rich');if(owner.careStreak>=10)badge('streak10');if(owner.wonTTT&&owner.wonBall&&owner.wonHorse&&owner.wonSnake)badge('gamer');}
+function buildBadgesModal(){document.getElementById('badges-sub').textContent=`${owner.badges.size} / ${BADGES.length} earned`;document.getElementById('badges-list').innerHTML=BADGES.map(b=>{const e=owner.badges.has(b.id);return`<div class="badge-item ${e?'earned':''}"><div class="bi-icon">${b.icon}</div><div><div class="bi-name">${b.n}</div><div class="bi-desc">${b.d}</div></div>${e?'<div style="color:#ffd60a;font-size:.73rem;font-weight:900;margin-left:auto">✅</div>':''}</div>`;}).join('');}
+function updateBadgePreview(){const earned=[...owner.badges].slice(-6);document.getElementById('badges-preview').innerHTML=earned.map(id=>{const b=BADGES.find(x=>x.id===id);return b?`<span title="${b.n}" style="font-size:1.2rem">${b.icon}</span>`:''}).join('');}
+
+// ═══ WEALTH CHART ════════════════
+function drawWealthChart(){const canvas=document.getElementById('wealth-chart');if(!canvas||wealthHistory.length<2)return;const ctx=canvas.getContext('2d');const w=canvas.width=canvas.offsetWidth*devicePixelRatio||300,h=canvas.height;ctx.clearRect(0,0,w,h);const mn=Math.min(...wealthHistory),mx=Math.max(...wealthHistory),range=Math.max(mx-mn,1);const pts=wealthHistory.map((v,i)=>({x:i/(wealthHistory.length-1)*w,y:h-(v-mn)/range*(h-10)-5}));const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,THEMES[pet.color].p+'80');grad.addColorStop(1,'transparent');ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=THEMES[pet.color].p;ctx.lineWidth=2;ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=grad;ctx.fill();}
+
+// ═══ TTT ══════════════════════════
+function openTTT(){openM('ttt-modal');resetTTT();}
+function resetTTT(){tttBoard=Array(9).fill('');tttOver=false;document.getElementById('ttt-status').textContent='Your turn! You are ✖';renderTTT();}
+function renderTTT(){document.getElementById('ttt-board').innerHTML=tttBoard.map((c,i)=>`<div class="ttt-cell${c?' taken '+c:''}" onclick="tttClick(${i})">${c==='X'?'✖':c==='O'?'⭕':''}</div>`).join('');document.getElementById('ttt-y').textContent=tttSc.y;document.getElementById('ttt-a').textContent=tttSc.a;document.getElementById('ttt-t').textContent=tttSc.t;document.getElementById('ttt-hi').textContent=`Best: ${tttSc.y} wins`;}
+function tttClick(i){if(tttOver||tttBoard[i])return;tttBoard[i]='X';const r=tttCheck();if(r){endTTT(r);return;}document.getElementById('ttt-status').textContent="AI's turn...";renderTTT();setTimeout(tttAI,400);}
+function tttAI(){let m=tttFindWin('O')||tttFindWin('X')||(tttBoard[4]===''?4:null)||tttRand();if(m===null)return;tttBoard[m]='O';const r=tttCheck();if(r){endTTT(r);return;}document.getElementById('ttt-status').textContent='Your turn!';renderTTT();}
+function tttFindWin(mk){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,b,c]of wins){const row=[tttBoard[a],tttBoard[b],tttBoard[c]];if(row.filter(x=>x===mk).length===2&&row.includes('')){const idx=[a,b,c].find(i=>tttBoard[i]==='');if(idx!==undefined)return idx;}}return null;}
+function tttRand(){const e=tttBoard.map((c,i)=>c===''?i:null).filter(x=>x!==null);return e.length?e[rand(0,e.length-1)]:null;}
+function tttCheck(){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,b,c]of wins){if(tttBoard[a]&&tttBoard[a]===tttBoard[b]&&tttBoard[b]===tttBoard[c])return tttBoard[a];}return tttBoard.every(c=>c)?'tie':null;}
+function endTTT(r){tttOver=true;if(r==='X'){tttSc.y++;document.getElementById('ttt-status').textContent='🎉 You WIN! +$20';owner.wallet+=20;owner.wonTTT=true;badge('ttt_win');addEvent('⭕','Won TTT!','Beat the AI! +$20','good',false);notify('🎉 You won! +$20');}else if(r==='O'){tttSc.a++;document.getElementById('ttt-status').textContent='🤖 AI wins!';notify('🤖 AI won. Try again!');}else{tttSc.t++;document.getElementById('ttt-status').textContent='🤝 Draw! +$5';owner.wallet+=5;notify('🤝 Draw! +$5');}renderTTT();updateUI();tick();}
+
+// ═══ 8-BALL ═══════════════════════
+function openBall(){openM('ball-modal');document.getElementById('ball-ans').textContent='🔮 Tap the ball to see your fate...';}
+function shakeBall(){const b=document.getElementById('ball8');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');const ans=BALL_ANSWERS[rand(0,BALL_ANSWERS.length-1)];setTimeout(()=>{document.getElementById('ball-ans').textContent='🔮 '+ans;owner.wallet+=3;owner.wonBall=true;document.getElementById('ball-hi').textContent=`Shakes: ${(parseInt(document.getElementById('ball-hi').textContent.match(/\d+/)?.[0]||0)+1)}`;notify(`🎱 Oracle: "${ans}" (+$3)`);addEvent('🎱','Oracle Consulted',`8-Ball said: "${ans}"`,'good',false);updateUI();tick();},650);}
+
+// ═══ HORSE ════════════════════════
+function openHorse(){horseBaskets=0;horseHorse='';horsePow=0;horseDir=1;horseRun=false;document.getElementById('h-baskets').textContent='0';document.getElementById('h-word').innerHTML='';document.getElementById('h-result').textContent='Click SHOOT when bar is in the green zone!';document.getElementById('horse-shoot').disabled=false;document.getElementById('horse-ball').className='horse-ball-disp';if(horseIv)clearInterval(horseIv);horseIv=setInterval(()=>{if(!horseRun)return;horsePow+=horseDir*3;if(horsePow>=100){horsePow=100;horseDir=-1;}if(horsePow<=0){horsePow=0;horseDir=1;}document.getElementById('h-ind').style.left=(horsePow-1)+'%';},28);horseRun=true;openM('horse-modal');}
+function horseShoot(){const p=horsePow;let scored=false,msg='';if(p>=45&&p<=55){scored=true;msg='🎯 PERFECT!';}else if((p>=30&&p<45)||(p>55&&p<=70)){scored=Math.random()<.5;msg=scored?'😅 Lucky!':'😬 Just missed!';}else{scored=false;msg='❌ Miss!';}const ball=document.getElementById('horse-ball');if(scored){horseBaskets++;document.getElementById('h-baskets').textContent=horseBaskets;ball.className='horse-ball-disp scored';owner.wallet+=5;notify('🏀 Basket! +$5');}else{horseHorse+='HORSE'[horseHorse.length];renderHorseWord();ball.className='horse-ball-disp missed';}document.getElementById('h-result').textContent=msg;setTimeout(()=>ball.className='horse-ball-disp',800);if(horseHorse.length>=5||horseBaskets>=10){clearInterval(horseIv);horseRun=false;document.getElementById('horse-shoot').disabled=true;const bonus=horseBaskets>=5?15:0,total=horseBaskets*5+bonus;owner.wallet+=bonus;if(horseBaskets>=5){owner.wonHorse=true;addEvent('🏀','Basketball Champ!',`Made ${horseBaskets} baskets! +$${total}`,'special',true);}else addEvent('🏀','Played HORSE',`Made ${horseBaskets} baskets. Earned $${total}.`,'good',false);document.getElementById('h-result').textContent=`Done! ${horseBaskets} baskets → $${total}`;const hi=document.getElementById('horse-hi');hi.textContent=`Best: ${Math.max(horseBaskets,parseInt(hi.textContent.match(/\d+/)?.[0]||0))} baskets`;notify(`🏀 Done! Earned $${total}!`);updateUI();tick();}checkBadges();}
+function renderHorseWord(){document.getElementById('h-word').innerHTML='HORSE'.split('').map((l,i)=>`<span class="hl ${i<horseHorse.length?'got':''}">${l}</span>`).join('');}
+
+// ═══ SNAKE ════════════════════════
+function openSnake(){openM('snake-modal');startSnake();}
+function startSnake(){
+  snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}];
+  snakeFood=randFood();
+  snakeVx=1;snakeVy=0;snakeScore=0;snakePaused=false;
+  document.getElementById('snake-score').textContent='0';
+  document.getElementById('snake-pause-btn').textContent='⏸';
+  if(snakeIv)clearInterval(snakeIv);
+  snakeRunning=true;
+  snakeIv=setInterval(snakeTick,115);
+  drawSnake();
+}
+function stopSnake(){if(snakeIv){clearInterval(snakeIv);snakeIv=null;}snakeRunning=false;}
+function toggleSnakePause(){snakePaused=!snakePaused;document.getElementById('snake-pause-btn').textContent=snakePaused?'▶':'⏸';}
+function snakeDir(dx,dy){if(dx===-snakeVx&&dy===-snakeVy)return;snakeVx=dx;snakeVy=dy;}
+function randFood(){let f;do{f={x:rand(0,SNAKE_GRID-1),y:rand(0,SNAKE_GRID-1)};}while(snake.some(s=>s.x===f.x&&s.y===f.y));return f;}
+function snakeTick(){
+  if(!snakeRunning||snakePaused)return;
+  const head={x:snake[0].x+snakeVx,y:snake[0].y+snakeVy};
+  if(head.x<0||head.x>=SNAKE_GRID||head.y<0||head.y>=SNAKE_GRID||snake.some(s=>s.x===head.x&&s.y===head.y)){
+    clearInterval(snakeIv);snakeRunning=false;
+    const bonus=snakeScore>=20?20:0;owner.wallet+=snakeScore+bonus;
+    if(snakeScore>=20){owner.wonSnake=true;badge('snake20');}
+    if(snakeScore>snakeBest){snakeBest=snakeScore;document.getElementById('snake-best-disp').textContent=snakeBest;document.getElementById('snake-hi').textContent=`Best: ${snakeBest}`;}
+    notify(`🐍 Game over! Score: ${snakeScore}. +$${snakeScore+bonus}`);
+    addEvent('🐍','Snake Game',`Scored ${snakeScore}. Earned $${snakeScore+bonus}.`,'good',false);
+    updateUI();tick();drawSnake(true);return;
+  }
+  snake.unshift(head);
+  if(head.x===snakeFood.x&&head.y===snakeFood.y){
+    snakeScore++;owner.wallet+=1;
+    document.getElementById('snake-score').textContent=snakeScore;
+    snakeFood=randFood();
+    updateUI();
+  } else snake.pop();
+  drawSnake();
+}
+function drawSnake(over=false){
+  const canvas=document.getElementById('snake-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const size=Math.min(canvas.parentElement.offsetWidth-32,300);
+  canvas.width=size;canvas.height=size;
+  const cell=size/SNAKE_GRID;
+  ctx.clearRect(0,0,size,size);
+  // Checkerboard
+  for(let x=0;x<SNAKE_GRID;x++)for(let y=0;y<SNAKE_GRID;y++){ctx.fillStyle=(x+y)%2===0?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.01)';ctx.fillRect(x*cell,y*cell,cell,cell);}
+  if(over){ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(0,0,size,size);ctx.fillStyle='white';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold ${cell*1.05}px sans-serif`;ctx.fillText('GAME OVER',size/2,size/2-cell*.8);ctx.font=`${cell*.72}px sans-serif`;ctx.fillText(`Score: ${snakeScore}`,size/2,size/2+cell*.4);ctx.font=`${cell*.6}px sans-serif`;ctx.fillStyle='#4dff6e';ctx.fillText(`+${snakeScore+(snakeScore>=20?20:0)} earned`,size/2,size/2+cell*1.3);return;}
+  // Apple (drawn shape — emoji unreliable on canvas)
+  const ax=snakeFood.x*cell+cell/2, ay=snakeFood.y*cell+cell/2, ar=cell*.38;
+  ctx.fillStyle='#ff2d2d';
+  ctx.beginPath();ctx.arc(ax,ay,ar,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#ff6b6b';
+  ctx.beginPath();ctx.arc(ax-ar*.25,ay-ar*.25,ar*.35,0,Math.PI*2);ctx.fill();
+  // stem
+  ctx.strokeStyle='#5a3000';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ax,ay-ar);ctx.lineTo(ax+ar*.3,ay-ar*1.4);ctx.stroke();
+  // leaf
+  ctx.fillStyle='#2ecc40';
+  ctx.beginPath();ctx.ellipse(ax+ar*.2,ay-ar*1.2,ar*.3,ar*.15,-0.5,0,Math.PI*2);ctx.fill();
+  // Snake
+  const col=THEMES[pet?.color||'pink'].p;
+  snake.forEach((s,i)=>{
+    ctx.fillStyle=i===0?col:col+'99';
+    const pad=1.5;
+    ctx.beginPath();ctx.rect(s.x*cell+pad,s.y*cell+pad,cell-pad*2,cell-pad*2);ctx.fill();
+  });
+  // Head eyes
+  if(snake.length){
+    const h=snake[0];
+    ctx.fillStyle='white';
+    ctx.beginPath();ctx.arc(h.x*cell+cell*.35,h.y*cell+cell*.35,cell*.1,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h.x*cell+cell*.65,h.y*cell+cell*.35,cell*.1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#000';
+    ctx.beginPath();ctx.arc(h.x*cell+cell*.37,h.y*cell+cell*.37,cell*.05,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h.x*cell+cell*.67,h.y*cell+cell*.37,cell*.05,0,Math.PI*2);ctx.fill();
+  }
+}
+document.addEventListener('keydown',e=>{if(!snakeRunning)return;if(e.key==='ArrowLeft')snakeDir(-1,0);else if(e.key==='ArrowRight')snakeDir(1,0);else if(e.key==='ArrowUp')snakeDir(0,-1);else if(e.key==='ArrowDown')snakeDir(0,1);else if(e.key===' ')toggleSnakePause();});
+
+// ═══ DEATH ════════════════════════
+function showDeath(){document.getElementById('game').style.display='none';const d=document.getElementById('death');d.classList.add('show');const nat=pet.age>=250;document.getElementById('death-wrap').innerHTML=`<div style="font-size:3.2rem;margin-bottom:11px">${nat?'🌟':'💔'}</div><h2>${nat?'A Life Well Lived':'Game Over'}</h2><p style="color:var(--muted);margin:11px 0 18px;line-height:1.6;">${nat?`${pet.name} lived ${pet.age} turns and passed away peacefully.`:`${pet.name}'s health hit zero. Keep those stats up!`}</p><div class="death-grid"><div class="death-stat"><div class="ds-val">${pet.age}</div><div class="ds-lbl">Turns Lived</div></div><div class="death-stat"><div class="ds-val">${pet.level}</div><div class="ds-lbl">Final Level</div></div><div class="death-stat"><div class="ds-val">$${owner.spent}</div><div class="ds-lbl">Total Spent</div></div><div class="death-stat"><div class="ds-val">${pet.tricks.length}</div><div class="ds-lbl">Tricks</div></div><div class="death-stat"><div class="ds-val">${owner.badges.size}</div><div class="ds-lbl">Badges</div></div><div class="death-stat"><div class="ds-val">${pet.children}</div><div class="ds-lbl">Children</div></div></div>${pet.married?`<p style="color:#ff6bcb;font-weight:800;margin-bottom:9px">💍 Married to ${pet.partner}</p>`:''}<button class="btn-start" onclick="location.reload()" style="max-width:220px;margin:0 auto">🐾 New Adventure</button>`;}
+
+// ═══ UI UPDATE ════════════════════
+function updateUI(){
+  if(!pet)return;
+  document.getElementById('tb-pet').textContent=PETS[pet.type].e;
+  document.getElementById('tb-name').textContent=pet.name;
+  document.getElementById('tb-owner').textContent=`${owner.name}'s Pet`;
+  document.getElementById('tb-money').textContent=`$${owner.wallet}`;
+  document.getElementById('tb-turn').textContent=`T${turn}`;
+  document.getElementById('tb-sick').style.display=pet.sick?'flex':'none';
+  document.getElementById('pet-emoji').textContent=PETS[pet.type].e;
+  document.getElementById('pet-acc-disp').textContent=pet.acc;
+  document.getElementById('pet-name-d').textContent=pet.name;
+  document.getElementById('stage-pill').textContent=`${pet.stage} · Age ${pet.age} · Lv.${pet.level}`;
+  document.getElementById('mood-d').textContent=getMood();
+  const need=pet.level*50;
+  document.getElementById('xp-lbl').textContent=`XP ${pet.xp}/${need}`;
+  document.getElementById('lv-lbl').textContent=`Lv.${pet.level}`;
+  document.getElementById('xp-bar').style.width=(pet.xp/need*100)+'%';
+  document.getElementById('streak-badge').textContent=owner.careStreak>=5?`🔥 ${owner.careStreak}-turn care streak!`:'';
+  setStat('h',pet.hunger);setStat('hp',pet.happy);setStat('hl',pet.health);setStat('e',pet.energy);setStat('hy',pet.hygiene);setStat('s',pet.social);
+  const pills=[];
+  if(pet.sick)pills.push('<span class="ipill sick">🤒 Sick</span>');
+  if(pet.married)pills.push(`<span class="ipill married">💍 ${pet.partner}</span>`);
+  if(pet.children>0)pills.push(`<span class="ipill children">👶 ${pet.children}</span>`);
+  if(owner.careStreak>=10)pills.push('<span class="ipill streak">🔥 Streak</span>');
+  document.getElementById('info-pills').innerHTML=pills.join('');
+  document.getElementById('wallet-big').textContent=`$${owner.wallet}`;
+  document.getElementById('total-spent').textContent=`$${owner.spent}`;
+  if(owner.goal>0){document.getElementById('goal-wrap').style.display='block';document.getElementById('goal-lbl').textContent=`$${owner.wallet}/$${owner.goal}`;document.getElementById('goal-fill').style.width=clamp(owner.wallet/owner.goal*100,0,100)+'%';}
+  const cats={};owner.log.forEach(e=>{cats[e.c]=(cats[e.c]||0)+e.p;});document.getElementById('exp-breakdown').innerHTML=Object.keys(cats).length?Object.entries(cats).map(([c,a])=>`<div class="exp-row"><span class="exp-cat">${c}</span><span class="exp-amt">$${a}</span></div>`).join(''):'<p style="color:var(--muted);font-size:.83rem;padding:7px 0;">No purchases yet!</p>';
+  document.getElementById('shop-sub').textContent=`💰 Wallet: $${owner.wallet}`;
+  updateSkillBars();buildTrickGrid();updateBadgePreview();drawWealthChart();
+}
+function setStat(id,val){const bar=document.getElementById(`sb-${id}`),txt=document.getElementById(`sv-${id}`);if(!bar||!txt)return;bar.style.width=val+'%';txt.textContent=val+'%';txt.className='vstat-v'+(val<15?' crit':val<30?' warn':'');bar.classList.toggle('pulse-bar',val<20);}
+function getMood(){if(!pet.alive)return'💀 Passed Away';if(pet.sick)return'🤒 Feeling Sick';const avg=(pet.hunger+pet.happy+pet.health+pet.energy+pet.hygiene+pet.social)/6;if(avg>=90)return'🤩 ABSOLUTELY ECSTATIC!!!';if(avg>=78)return'😄 Super Happy!';if(avg>=65)return'😊 Doing Great';if(avg>=52)return'🙂 Pretty Good';if(avg>=40)return'😐 Feeling Meh';if(avg>=28)return'😟 Not Great';if(avg>=15)return'😢 Very Unhappy';return'😵 Critical!';}
+
+// ═══ TABS ════════════════════════
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('p-'+b.dataset.p).classList.add('on');if(b.dataset.p==='skills')buildSkillsUI();if(b.dataset.p==='life')renderEvents();if(b.dataset.p==='money')drawWealthChart();});
+
+// ═══ SETTINGS ════════════════════
+function syncSettings(){if(!pet)return;document.querySelectorAll('#sg-cg .cswatch').forEach(el=>{el.classList.toggle('sel',el.dataset.c===pet.color);el.onclick=()=>{document.querySelectorAll('#sg-cg .cswatch').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');pet.color=el.dataset.c;applyTheme(pet.color);};});document.querySelectorAll('#sg-ag .acc-opt').forEach(el=>{el.classList.toggle('sel',el.dataset.a===pet.acc);el.onclick=()=>{document.querySelectorAll('#sg-ag .acc-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');pet.acc=el.dataset.a;document.getElementById('pet-acc-disp').textContent=pet.acc;};});}
+function settingsAnswer(){
+  const input=document.getElementById('sg-qa-input').value.toLowerCase().trim();
+  const box=document.getElementById('sg-qa-answer');
+  box.style.display='block';
+  const qa=[
+    {keywords:['money','earn','coins','chore'],answer:'💰 Earn money by doing chores in the Money tab. Spend wisely on food and care!'},
+    {keywords:['feed','food','hungry','hunger'],answer:'🍖 Go to Home and click Feed. It costs money so keep doing chores!'},
+    {keywords:['heal','health','sick','vet','medicine'],answer:'💊 Click Vet ($50) on the Home screen to restore health and cure sickness.'},
+    {keywords:['play','happy','happiness'],answer:'🎾 Click Play on the Home screen — it\'s free and boosts happiness!'},
+    {keywords:['level','xp','experience','level up'],answer:'⭐ You gain XP by caring for your pet. Each action gives XP and levels you up!'},
+    {keywords:['badge','unlock','reward'],answer:'🏅 Badges are earned by hitting milestones — playing often, doing chores, winning games, and more!'},
+    {keywords:['lose','die','death','zero','game over'],answer:'⚠️ If Health hits 0 your pet passes away. Keep feeding, healing, and caring every turn!'},
+    {keywords:['shop','buy','item'],answer:'🛒 Visit the Shop in the Money tab to buy food, toys, and health items.'},
+    {keywords:['mini','game','arcade'],answer:'🎮 Go to the Games tab for Tic Tac Toe, 8-Ball, HORSE, and Snake — all earn coins!'},
+    {keywords:['skill','practice','music','sports','arts'],answer:'🎓 Go to the Skills tab and click Practice to level up your pet\'s talents. Costs $5 and energy.'},
+    {keywords:['trick','teach'],answer:'🎪 Go to Skills → Tricks section and click a trick to teach it. Costs $8 and needs energy + happiness.'},
+    {keywords:['energy','tired','rest'],answer:'😴 Click Rest on the Home screen to restore energy. Your pet needs energy for most actions!'},
+    {keywords:['hygiene','bath','dirty'],answer:'🛁 Click Bath to clean your pet. Low hygiene hurts health over time!'},
+    {keywords:['social','lonely','friend'],answer:'🤝 Play, explore, and sing to boost social. High social can lead to marriage events!'},
+    {keywords:['marry','marriage','partner','love'],answer:'💍 Once your pet is old enough and high level, a marriage proposal may appear randomly!'},
+    {keywords:['baby','children','pregnant'],answer:'👶 After marriage, your pet may have babies! Keep happiness high for the best chance.'},
+    {keywords:['color','theme','customize'],answer:'🎨 Change your color theme right above this Q&A section!'},
+    {keywords:['accessory','hat','crown'],answer:'👑 Pick an accessory above to put something on your pet\'s head!'},
+    {keywords:['stat','stats'],answer:'📊 There are 6 stats: Hunger, Happiness, Health, Energy, Hygiene, and Social. Keep them all up!'},
+    {keywords:['streak','care'],answer:'🔥 Keep caring for your pet every turn to build a care streak. 10 turns earns a badge!'},
+  ];
+  const match=qa.find(item=>item.keywords.some(k=>input.includes(k)));
+  if(input===''){box.innerHTML='💬 Type a question first!';}
+  else if(match){box.innerHTML=match.answer;}
+  else{box.innerHTML='🤔 Not sure about that! Try asking about stats, money, feeding, healing, badges, tricks, or skills.';}
+  document.getElementById('sg-qa-input').value='';
+}
+// ═══ MODALS ══════════════════════
+function openM(id){if(id==='chore-modal')buildChoreUI();if(id==='badges-modal')buildBadgesModal();if(id==='settings-modal')syncSettings();if(id==='shop-modal')buildShopUI();document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');if(id==='horse-modal'){clearInterval(horseIv);horseRun=false;}if(id==='snake-modal')stopSnake();}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='marry-modal')closeM(o.id);}));
+// ═══ UTILS ═══════════════════════
+let nT;
+function notify(msg){const el=document.getElementById('notif');el.textContent=msg;el.classList.add('show');clearTimeout(nT);nT=setTimeout(()=>el.classList.remove('show'),3000);}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+
+function openReport(){renderReport('all');openM('report-modal');}
+function renderReport(filter){
+  let html='';
+  if(filter==='all'||filter==='stats'){
+    html+=`<div class="sec-title" style="margin-top:10px">📈 Current Stats</div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Hunger</span><span class="exp-amt">${pet.hunger}%</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Happiness</span><span class="exp-amt">${pet.happy}%</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Health</span><span class="exp-amt">${pet.health}%</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Energy</span><span class="exp-amt">${pet.energy}%</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Hygiene</span><span class="exp-amt">${pet.hygiene}%</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Social</span><span class="exp-amt">${pet.social}%</span></div>`;
+  }
+  if(filter==='all'||filter==='money'){
+    html+=`<div class="sec-title" style="margin-top:14px">💰 Money Summary</div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Balance</span><span class="exp-amt">$${owner.wallet}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Total Spent</span><span class="exp-amt">$${owner.spent}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Chores Done</span><span class="exp-amt">${owner.choreCount}</span></div>`;
+    const cats={};owner.log.forEach(e=>{cats[e.c]=(cats[e.c]||0)+e.p;});
+    Object.entries(cats).forEach(([c,a])=>{html+=`<div class="exp-row"><span class="exp-cat">↳ ${c}</span><span class="exp-amt">$${a}</span></div>`;});
+  }
+  if(filter==='all'||filter==='life'){
+    html+=`<div class="sec-title" style="margin-top:14px">🐾 Life Summary</div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Pet Name</span><span class="exp-amt">${pet.name}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Level</span><span class="exp-amt">${pet.level}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Age (turns)</span><span class="exp-amt">${pet.age}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Tricks Learned</span><span class="exp-amt">${pet.tricks.length}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Badges Earned</span><span class="exp-amt">${owner.badges.size}</span></div>`;
+    html+=`<div class="exp-row"><span class="exp-cat">Care Streak</span><span class="exp-amt">${owner.careStreak}</span></div>`;
+  }
+  document.getElementById('report-content').innerHTML=html;
+}
+
+</script>
+
+<!-- REPORT MODAL -->
+<div class="overlay" id="report-modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeM('report-modal')">✕</button>
+    <h2>📊 Pet Report</h2>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:.72rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Filter By</label>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        <button class="pill" onclick="renderReport('all')">All</button>
+        <button class="pill" onclick="renderReport('money')">💰 Money</button>
+        <button class="pill" onclick="renderReport('stats')">📈 Stats</button>
+        <button class="pill" onclick="renderReport('life')">🐾 Life</button>
+      </div>
+    </div>
+    <div id="report-content"></div>
+  </div>
+</div>
+</body>
+</html>
+
